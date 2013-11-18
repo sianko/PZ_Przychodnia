@@ -1,0 +1,85 @@
+body{
+	font-family: Arial;
+	background: #5695ce;
+}
+
+
+div.naglowek{
+	width: 100%;
+	background: #5695ce url('../img/top.png') repeat-x;
+	border-bottom: 1px solid #01669c;
+}
+
+header.main{
+	background: url('../img/naglowek.jpg') no-repeat;
+	width: 1000px;
+	height: 323px;
+	margin: 0 auto;
+}
+
+.szary_piasek{
+	background: url('../img/tlo.png') repeat;
+	max-width: 100%;
+	width: 100%;
+	border-top: 1px solid #fff;
+	border-bottom: 1px solid #01669c;
+	padding-bottom: 15px;
+	padding-top: 8px;
+}
+
+
+nav.navbar{
+	margin: 0 auto;
+	margin-left: 217px;
+	padding-top: 8px;
+	background: transparent;
+	width:600px;
+	height: 58px;
+}
+
+nav.navbar li{
+	border-left: 1px dotted #3d6b95;
+	padding: 0 3px;
+}
+
+.dropdown-menu li{
+	border: 0 !important;
+}
+
+nav.navbar a{
+	color: #fff;
+}
+
+nav.navbar a:hover{
+	color: #0057ae;
+}
+
+.dropdown-menu a{
+	color: #313131 !important;
+}
+
+nav.navbar .caret{
+	border-top-color: #fff;
+}
+
+footer{
+	border-top: 1px solid #fff;
+	padding-top: 10px;
+}
+
+footer p{
+	padding-top: 8px;
+	text-align: center;
+	color: #003f7d;
+	text-transform: uppercase;
+	font-size: 10px;
+}
+
+.miejsce_na_tresc{
+	width: 1000px;
+	margin: 0 auto;
+}
+
+.niebieski{
+	color: #1188ff;
+}

@@ -1,0 +1,82 @@
+<?php echo $this->doctype(); ?>
+
+<html lang="pl">
+    <head>
+        <meta charset="utf-8">
+        <?php echo $this->headTitle('Wirtualna Przychodnia')->setSeparator(' :: ')->setAutoEscape(false) ?>
+
+        <?php echo $this->headMeta()
+            ->appendName('viewport', 'width=device-width, initial-scale=1.0')
+            ->appendHttpEquiv('X-UA-Compatible', 'IE=edge')
+        ?>
+
+        <!-- Le styles -->
+        <?php echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
+                        ->prependStylesheet($this->basePath() . '/css/style_custom.css')
+                        ->prependStylesheet($this->basePath() . '/css/bootstrap-theme.min.css')
+                        ->prependStylesheet($this->basePath() . '/css/bootstrap.min.css')
+                                    ?>
+
+        <!-- Scripts -->
+        <?php echo $this->headScript()
+            ->prependFile($this->basePath() . '/js/bootstrap.min.js')
+            ->prependFile($this->basePath() . '/js/jquery.min.js')
+            ->prependFile($this->basePath() . '/js/respond.min.js', 'text/javascript', array('conditional' => 'lt IE 9',))
+            ->prependFile($this->basePath() . '/js/html5shiv.js',   'text/javascript', array('conditional' => 'lt IE 9',))
+        ; ?>
+
+    </head>
+    <body>
+    <div class="naglowek">
+        <header class="main">
+
+            <nav class="navbar" role="navigation">
+                
+                <ul class="nav nav-pills">
+                  <li><a href="<?php echo $this->url('home') ?>">Strona główna</a></li>
+                  <li><a href="<?php echo $this->url('home') ?>">Rejestracja</a></li>
+                  <li><a href="<?php echo $this->url('home') ?>">Logowanie</a></li>
+                  <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Pacjent<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                  <li><a href="#">Moje wizyty</a></li>
+                                  <li><a href="#">Zapisz się na wizytę</a></li>
+                                  <li><a href="#">Znajdź lekarza</a></li>
+                                  <li class="divider"></li>
+                                  <li><a href="#">Edytuj profil</a></li>
+                                  <li class="divider"></li>
+                                  <li><a href="#">Wyloguj</a></li>
+                                </ul>
+                  </li>
+                  <!--li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Lekarz<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                  <li><a href="#">Moje wizyty</a></li>
+                                  <li class="divider"></li>
+                                  <li><a href="#">Edytuj profil</a></li>
+                                  <li class="divider"></li>
+                                  <li><a href="#">Wyloguj</a></li>
+                                </ul>
+                  </li-->
+                  <li><a href="<?php echo $this->url('kontakt') ?>">Kontakt</a></li>
+                </ul>
+            </nav>
+        </header>
+    </div>
+        
+        <div class="container szary_piasek">
+            <div class="miejsce_na_tresc">
+            <?php echo $this->content; ?>
+            </div>
+
+        </div> <!-- /container -->
+        
+        <footer>
+                <p>Projekt wykonany na potrzeby przedmiotu "Projekt zespołowy"<br />
+                Zespół w składzie: Darek Jędrzejka, Grzegorz Szamburski<br />
+                2013</p>
+        </footer>
+        
+        <?php echo $this->inlineScript() ?>
+    </body>
+</html>
