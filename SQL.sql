@@ -1,0 +1,1 @@
+MIEJSCE NA KOPIĘ SQL-a (MySQL)
