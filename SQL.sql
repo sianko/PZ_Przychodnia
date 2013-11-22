@@ -42,6 +42,8 @@ CREATE TABLE IF NOT EXISTS `osoby` (
   `imie` varchar(20) COLLATE utf8_polish_ci NOT NULL,
   `nazwisko` varchar(40) COLLATE utf8_polish_ci NOT NULL,
   `pesel` char(11) COLLATE utf8_polish_ci NOT NULL,
+	`haslo` char(64) COLLATE utf8_polish_ci NOT NULL,
+	`sol` varchar(10) COLLATE utf8_polish_ci NOT NULL DEFAULT 'hashsalt',
   `adres` varchar(200) COLLATE utf8_polish_ci NOT NULL,
   `telefon` varchar(11) COLLATE utf8_polish_ci DEFAULT NULL,
   `email` varchar(50) COLLATE utf8_polish_ci NOT NULL,
