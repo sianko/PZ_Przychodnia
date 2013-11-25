@@ -260,4 +260,10 @@ return array(
     
     // Zend\Validator\Uri
     "The input does not appear to be a valid Uri" => "Wartość nie jest poprawnym Uri",
+    
+    
+    
+    // CustomZend\Authentication\Adapter\SaltedAuthAdapter.php
+    "Authentication successful." => "Logowanie przebiegło pomyślnie!",
+    "Supplied password is invalid." => "Podane hasło jest nieprawidłowe.",
 );

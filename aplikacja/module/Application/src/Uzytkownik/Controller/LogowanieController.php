@@ -22,9 +22,10 @@ class LogowanieController extends AbstractActionController
     public function indexAction()
     {
 		$user = $this->identity();
+        $result = null;
+        $form = new AuthForm();
+        
         if (!$user) {
-            $form = new AuthForm();
-            $messages = null;
 
             $request = $this->getRequest();
             if ($request->isPost()) {
@@ -81,18 +82,11 @@ class LogowanieController extends AbstractActionController
                             // do stuff for other failure
                             break;
                     }				
-                    foreach ($result->getMessages() as $message) {
-                        $messages .= "$message \n"; 
-                    }			
+                   		
                  }
             }
-        } else{
-            $form = new AuthForm();
-            $messages = '';
-            
-        }
-            return array('form' => $form, 'messages' => $messages);
-        
+        } 
+            return array('form' => $form, 'result' => $result);
             
     }
     

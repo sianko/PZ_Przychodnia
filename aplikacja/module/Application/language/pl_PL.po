@@ -151,3 +151,4 @@ msgstr "rozwiązuje na %s"
 msgid "Exception"
 msgstr "Wyjątek"
 
+

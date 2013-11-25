@@ -34,31 +34,68 @@
                 
                 <ul class="nav nav-pills">
                   <li><a href="<?php echo $this->url('home') ?>">Strona główna</a></li>
+                  
+                  <?php 
+                    $user = $this->identity();
+                    
+                    if(!$user) // niezalogowany
+                    {
+                    ?>
+                  
                   <li><a href="<?php echo $this->url('home') ?>">Rejestracja</a></li>
-                  <li><a href="<?php echo $this->url('home') ?>">Logowanie</a></li>
+                  <li><a href="<?php echo $this->url('uzytkownik', array('controller'=>'logowanie')) ?>">Logowanie</a></li>
+                  
+                  <?php
+                    } else if(($poziomUzytkownika = intval($user->poziom)) === 0){ // pacjent
+                   ?>
                   <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Pacjent<b class="caret"></b></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Panel Pacjenta<b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                   <li><a href="#">Moje wizyty</a></li>
                                   <li><a href="#">Zapisz się na wizytę</a></li>
                                   <li><a href="#">Znajdź lekarza</a></li>
                                   <li class="divider"></li>
                                   <li><a href="#">Edytuj profil</a></li>
-                                  <li class="divider"></li>
-                                  <li><a href="#">Wyloguj</a></li>
+
                                 </ul>
                   </li>
-                  <!--li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Lekarz<b class="caret"></b></a>
+                  
+                  <?php
+                    } else if ($poziomUzytkownika === 1){ // lekarz
+                    ?>
+                  <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Panel Lekarza<b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                   <li><a href="#">Moje wizyty</a></li>
                                   <li class="divider"></li>
                                   <li><a href="#">Edytuj profil</a></li>
-                                  <li class="divider"></li>
-                                  <li><a href="#">Wyloguj</a></li>
+                           
                                 </ul>
-                  </li-->
+                  </li>
+                  
+                  <?php
+                    } else if ($poziomUzytkownika === 2){ // administracja
+                  ?>
+                    <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Panel Recepcjonisty<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                  <li><a href="#">Moje wizyty</a></li>
+                                  <li class="divider"></li>
+                                  <li><a href="#">Edytuj profil</a></li>
+                              </ul>
+                    </li>
+                  
+                  <?php
+                    }
+                  ?>
+                  
                   <li><a href="<?php echo $this->url('kontakt') ?>">Kontakt</a></li>
+                  
+                  <?php
+                    if($user){
+                     echo '<li><a href="'.($this->url('uzytkownik', array('controller' => 'logowanie', 'action' => 'wyloguj'))).'">Wyloguj</a></li>';
+                    }
+                  ?>
                 </ul>
             </nav>
         </header>

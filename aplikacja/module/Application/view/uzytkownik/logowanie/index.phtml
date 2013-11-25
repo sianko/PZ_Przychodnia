@@ -1,4 +1,16 @@
-<?php
+<?php 
+    if(isset($this->result))
+    {
+        if($this->result->getCode() > 0){ $messageStyle = 'alert-success'; }
+        else { $messageStyle = 'alert-danger'; }
+        
+        echo '<div class="alert '.$messageStyle.'">';
+        foreach($this->result->getMessages() as $msg){
+            echo $this->translate($this->escapeHtml($msg)).'<br />';
+        }
+        echo '</div>';
+    }
+
     $tytul = 'Logowanie';
     $this->headTitle($tytul);
     
@@ -6,19 +18,19 @@
 
     
     if ($user = $this->identity()) {
-        echo '<div class="alert alert-success"><strong>Zalogowano jako</strong> '. $this->escapeHtml($user->pesel) .'</div>';
-        echo '<div class="alert alert-info"><strong>Identity</strong><br />';
-        
-        print_r($user);
-        echo '</div>';
+        echo '<div class="row">
+        <div class="alert alert-success col-md-6 col-md-offset-3 text-center"><strong>Użytkownik zalogowany</strong><br />'. $this->escapeHtml($user->imie . ' ' . $user->nazwisko . ' (' . $user->email . ')') .'</div>
+        </div>
+        <div class="row">
+        <a href="'.($this->url('uzytkownik', array('controller' => 'logowanie', 'action' => 'wyloguj'))).'" title="" class="btn btn-info col-md-2 col-md-offset-5 text-center"><strong>WYLOGUJ</strong></a>
+        </div>
+        ';
 ?>		
 
-<a href="<?php echo $this->url('uzytkownik', array('controller' => 'logowanie', 'action' => 'wyloguj'));?>">Wyloguj</a> 
 
 <?php
     } else { 
  echo '<h3 style="margin: 10px auto; width: 170px;">'.$tytul.'</h3>';
- echo $this->escapeHtml($this->messages); 
  
 $form = $this->form;
 
