@@ -257,7 +257,7 @@ return array(
     // Zend\Validator\StringLength
     "The input is less than %min% characters long" => "Podana wartość zawiera mniej niż %min% znaków",
     "The input is more than %max% characters long" => "Podana wartość zawiera więcej niż %max% znaków",
-
+    
     // Zend\Validator\Uri
     "The input does not appear to be a valid Uri" => "Wartość nie jest poprawnym Uri",
 );

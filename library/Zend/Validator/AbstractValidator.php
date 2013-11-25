@@ -64,7 +64,7 @@ abstract class AbstractValidator implements
      * @param array|Traversable $options
      */
     public function __construct($options = null)
-    {
+    {          
         // The abstract constructor allows no scalar values
         if ($options instanceof Traversable) {
             $options = ArrayUtils::iteratorToArray($options);
@@ -76,8 +76,9 @@ abstract class AbstractValidator implements
 
         if (isset($this->messageVariables)) {
             $this->abstractOptions['messageVariables'] = $this->messageVariables;
+            
         }
-
+        
         if (is_array($options)) {
             $this->setOptions($options);
         }
@@ -306,6 +307,8 @@ abstract class AbstractValidator implements
 
         $message = str_replace('%value%', (string) $value, $message);
         foreach ($this->abstractOptions['messageVariables'] as $ident => $property) {
+        
+
             if (is_array($property)) {
                 $value = $this->{key($property)}[current($property)];
                 if (is_array($value)) {

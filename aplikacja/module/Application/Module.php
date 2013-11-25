@@ -11,14 +11,21 @@ namespace Application;
 
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
+use Uzytkownik\Model\Uzytkownik;
+use Uzytkownik\Model\UzytkownikTable;
+use Zend\Db\ResultSet\ResultSet;
+use Zend\Db\TableGateway\TableGateway;
+
 
 class Module
 {
     public function onBootstrap(MvcEvent $e)
     {
+     
         $eventManager        = $e->getApplication()->getEventManager();
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
+        
     }
 
     public function getConfig()
@@ -27,13 +34,33 @@ class Module
     }
 
     public function getAutoloaderConfig()
-    {
+    {   
         return array(
             'Zend\Loader\StandardAutoloader' => array(
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
+                    'Uzytkownik' => __DIR__ . '/src/Uzytkownik',
                 ),
             ),
         );
+    }
+    
+    public function getServiceConfig()
+    {
+         return array(
+             'factories' => array(
+                 'Uzytkownik\Model\UzytkownikTable' =>  function($sm) {
+                     $tableGateway = $sm->get('UzytkownikTableGateway');
+                     $table = new UzytkownikTable($tableGateway);
+                     return $table;
+                 },
+                 'UzytkownikTableGateway' => function ($sm) {
+                     $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                     $resultSetPrototype = new ResultSet();
+                     $resultSetPrototype->setArrayObjectPrototype(new Uzytkownik());
+                     return new TableGateway('osoby', $dbAdapter, null, $resultSetPrototype);
+                 },
+             ),
+         );
     }
 }

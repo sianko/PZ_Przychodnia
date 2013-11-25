@@ -21,7 +21,7 @@ return array(
                 ),
             ),
             'kontakt' => array(
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Literal',
                 'options' => array(
                     'route'    => '/kontakt',
                     'defaults' => array(
@@ -36,15 +36,15 @@ return array(
             // module. Simply drop new controllers in, and you can access them
             // using the path /application/:controller/:action
             'application' => array(
-                'type'    => 'Literal',
-                'options' => array(
-                    'route'    => '/application',
-                    'defaults' => array(
-                        '__NAMESPACE__' => 'Application\Controller',
-                        'controller'    => 'Index',
-                        'action'        => 'index',
+                'type'    => 'Segment',
+                    'options' => array(
+                        'route'    => '/application[/:controller[/:action]]',
+                        'defaults' => array(
+                            //'__NAMESPACE__' => 'Application\Controller',
+                            'controller'    => 'Application\Controller\Index',
+                            'action'        => 'index',
+                        ),
                     ),
-                ),
                 'may_terminate' => true,
                 'child_routes' => array(
                     'default' => array(
@@ -61,7 +61,41 @@ return array(
                     ),
                 ),
             ),
+            'uzytkownik' => array(
+                'type'    => 'Segment',
+                    'options' => array(
+                        'route'    => '/uzytkownik[/:controller[/:action[/:id]]]',
+                        'constraints' => array(
+                                'controller' => '[a-zA-Z][a-zA-Z0-9_\-]*',
+                                'action'     => '[a-zA-Z][a-zA-Z0-9_\-]*',
+                                'id'     => '[0-9]*',
+                            ),
+                        'defaults' => array(
+                            '__NAMESPACE__' => 'Uzytkownik\Controller',
+                            'controller'    => 'Logowanie',
+                            'action'        => 'index',
+                        ),
+                    ),
+                'may_terminate' => true,
+                'child_routes' => array(
+                    'default' => array(
+                        'type'    => 'Segment',
+                        'options' => array(
+                            'route'    => '/uzytkownik[/:controller[/:action]]',
+                            'constraints' => array(
+                                'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                            ),
+                            'defaults' => array(
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            
+            
         ),
+        
     ),
     'service_manager' => array(
         'abstract_factories' => array(
@@ -70,7 +104,11 @@ return array(
         ),
         'aliases' => array(
             'translator' => 'MvcTranslator',
+            'Zend\Authentication\AuthenticationService' => 'my_auth_service',
         ),
+        'invokables' => array(
+			'my_auth_service' => 'Zend\Authentication\AuthenticationService',
+		),
     ),
     'translator' => array(
         'locale' => 'pl_PL',
@@ -80,12 +118,21 @@ return array(
                 'base_dir' => __DIR__ . '/../language',
                 'pattern'  => '%s.mo',
             ),
+            array(
+                'type'        => 'phparray',
+                'base_dir'    => __DIR__ . '/../../../../resources/languages',
+                'pattern'     => '/pl/Zend_Validate.php',
+                'text_domain' => 'default'
+            ),
         ),
     ),
     'controllers' => array(
         'invokables' => array(
             'Application\Controller\Index' => 'Application\Controller\IndexController',
-            'Application\Controller\Kontakt' => 'Application\Controller\KontaktController'
+            'Application\Controller\Kontakt' => 'Application\Controller\KontaktController',
+            'Uzytkownik\Controller\Index' => 'Uzytkownik\Controller\IndexController',
+            'Uzytkownik\Controller\Logowanie' => 'Uzytkownik\Controller\LogowanieController',
+            'ModelBuilder\Controller\Index' => 'ModelBuilder\Controller\IndexController',
         ),
     ),
     'view_manager' => array(
@@ -97,6 +144,7 @@ return array(
         'template_map' => array(
             'layout/layout'           => __DIR__ . '/../view/layout/layout.phtml',
             'application/index/index' => __DIR__ . '/../view/application/index/index.phtml',
+
             'error/404'               => __DIR__ . '/../view/error/404.phtml',
             'error/index'             => __DIR__ . '/../view/error/index.phtml',
         ),
@@ -111,4 +159,20 @@ return array(
             ),
         ),
     ),
+    
+    // Doctrine config
+    'doctrine' => array(
+        'driver' => array(
+            __NAMESPACE__ . '_driver' => array(
+                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+                'cache' => 'array',
+                'paths' => array(__DIR__ . '/../src/' . __NAMESPACE__ . '/Entity')
+            ),
+            'orm_default' => array(
+                'drivers' => array(
+                    __NAMESPACE__ . '\Entity' => __NAMESPACE__ . '_driver'
+                )
+            )
+        )
+    )
 );

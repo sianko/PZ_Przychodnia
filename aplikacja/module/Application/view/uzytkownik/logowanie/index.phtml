@@ -1,0 +1,72 @@
+<?php
+    $tytul = 'Logowanie';
+    $this->headTitle($tytul);
+    
+    
+
+    
+    if ($user = $this->identity()) {
+        echo '<div class="alert alert-success"><strong>Zalogowano jako</strong> '. $this->escapeHtml($user->pesel) .'</div>';
+        echo '<div class="alert alert-info"><strong>Identity</strong><br />';
+        
+        print_r($user);
+        echo '</div>';
+?>		
+
+<a href="<?php echo $this->url('uzytkownik', array('controller' => 'logowanie', 'action' => 'wyloguj'));?>">Wyloguj</a> 
+
+<?php
+    } else { 
+ echo '<h3 style="margin: 10px auto; width: 170px;">'.$tytul.'</h3>';
+ echo $this->escapeHtml($this->messages); 
+ 
+$form = $this->form;
+
+$form->prepare();
+
+echo $this->form()->openTag($form);
+?>
+<div class="row">
+<div class="col-md-offset-5 col-md-4">
+
+
+<div class="row">
+<div class="form-group col-md-10">
+      <?php echo $this->formRow($form->get('pesel')); ?>
+  </div>
+</div>  
+<div class="row">
+  <div class="form-group col-md-10">
+
+      <?php echo $this->formRow($form->get('haslo')); ?>
+
+  </div>
+</div> 
+<div class="row">
+  <div class="form-group">
+    <div class="col-md-offset-2 col-md-10">
+      <div class="checkbox">
+        <?php echo $this->formRow($form->get('rememberme')); ?>
+      </div>
+    </div>
+  </div>
+  
+  <div class="form-group">
+    <div class="col-md-offset-3 col-md-4">
+      <?php echo $this->formSubmit($form->get('submit')); ?>
+    </div>
+  </div>
+</div> 
+
+</div>
+</div>
+
+<?php echo $this->form()->closeTag();   
+
+
+    }
+?>
+<p>
+	<!--a href="<?php //echo $this->url('auth/default', array('controller' => 'registration', 'action' => 'index'));?>"><?php echo $this->translate('Register'); ?></a> |  
+	<a href="<?php //echo $this->url('auth/default', array('controller' => 'registration', 'action' => 'forgotten-password'));?>"><?php echo $this->translate('Forgotten Password'); ?></a-->
+</p>
