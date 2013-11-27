@@ -76,6 +76,9 @@ class LogowanieController extends AbstractActionController
                                 $sessionManager = new \Zend\Session\SessionManager();
                                 $sessionManager->rememberMe($time);
                             }
+                            
+                            return $this->redirect()->toRoute('uzytkownik', array('controller' => 'profil'));	
+                            
                             break;
 
                         default:

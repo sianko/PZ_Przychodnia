@@ -74,6 +74,7 @@ return array(
                             '__NAMESPACE__' => 'Uzytkownik\Controller',
                             'controller'    => 'Logowanie',
                             'action'        => 'index',
+                            'id' => 0
                         ),
                     ),
                 'may_terminate' => true,
@@ -132,7 +133,7 @@ return array(
             'Application\Controller\Kontakt' => 'Application\Controller\KontaktController',
             'Uzytkownik\Controller\Index' => 'Uzytkownik\Controller\IndexController',
             'Uzytkownik\Controller\Logowanie' => 'Uzytkownik\Controller\LogowanieController',
-            'ModelBuilder\Controller\Index' => 'ModelBuilder\Controller\IndexController',
+            'Uzytkownik\Controller\Profil' => 'Uzytkownik\Controller\ProfilController',
         ),
     ),
     'view_manager' => array(

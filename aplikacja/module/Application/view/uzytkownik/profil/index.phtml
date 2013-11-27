@@ -1,0 +1,41 @@
+<?php
+
+ $title = 'Mój profil';
+ $this->headTitle($title);
+ $user = $this->identity();
+
+ if($user->poziom == 2){
+    $poziomUzytkownikaStyl = 'danger';
+    $poziomUzytkownikaNapis = 'ADMINISTRATOR';
+ }
+ else if($user->poziom == 1){
+    $poziomUzytkownikaStyl = 'success';
+    $poziomUzytkownikaNapis = 'LEKARZ';
+ }
+ else {
+    $poziomUzytkownikaStyl = 'info';
+    $poziomUzytkownikaNapis = 'PACJENT';
+ }
+ ?>
+
+<div class="row">
+  <div class="col-md-2 col-md-offset-2 text-center well well-sm">
+  <span style="font-size: 85px;" class="glyphicon glyphicon-user alert alert-<?php echo $user->plec === 'M' ? 'info' : 'danger'; ?>"></span>
+  <p><span style="padding: 9px" class="alert alert-<?php echo $poziomUzytkownikaStyl; ?>"><?php echo $poziomUzytkownikaNapis; ?></span></p>
+  </div>
+  <div class="col-md-6 well">
+  <?php 
+  echo '<h3 style="margin-top: 0;">'.$this->escapeHtml($user->imie . ' ' . $user->nazwisko).' <a href="" title="" class="btn btn-warning btn-xs">Edytuj</a></h3>';
+  echo '<p><span class="label label-default">PESEL</span> '.$this->escapeHtml($user->pesel).'</p>';
+  echo '<p><span class="label label-default">Data urodzenia</span> '.$this->escapeHtml($user->data_ur).'</p>';
+  echo '<p><span class="label label-default">Adres</span> '.$this->escapeHtml($user->adres).'</p>';
+  echo '<p><span class="label label-default">E-Mail</span> '.$this->escapeHtml($user->email).'</p>';
+  if(!empty($user->telefon)) echo '<p><span class="label label-default">Telefon</span> '.$this->escapeHtml($user->telefon).'</p>';   
+  
+ 
+ ?>
+  
+  
+  
+  </div>
+</div>
