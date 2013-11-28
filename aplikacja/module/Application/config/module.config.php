@@ -7,6 +7,28 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
+
+/* Własna konfiguracja Doctrine */
+$MY_NAMESPACES_ENTITY = array(
+    'Application',
+    'Uzytkownik'
+);
+
+$array_injected_into_doctrine = array();
+
+foreach($MY_NAMESPACES_ENTITY as $source)
+{
+    $array_injected_into_doctrine[$source . '_entities'] = array(
+                                                                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+                                                                'cache' => 'array',
+                                                                'paths' => array(__DIR__ . '/../src/'. $source . '/Entity')
+                                                            );
+    $array_injected_into_doctrine['orm_default']['drivers'][$source . '\Entity'] = $source . '_entities';
+}
+
+/* END Własna konfiguracja */
+
+
 return array(
     'router' => array(
         'routes' => array(
@@ -15,7 +37,8 @@ return array(
                 'options' => array(
                     'route'    => '/',
                     'defaults' => array(
-                        'controller' => 'Application\Controller\Index',
+                        '__NAMESPACE__' => 'Application\Controller',
+                        'controller' => 'Index',
                         'action'     => 'index',
                     ),
                 ),
@@ -163,17 +186,36 @@ return array(
     
     // Doctrine config
     'doctrine' => array(
-        'driver' => array(
-            __NAMESPACE__ . '_driver' => array(
+        'driver' => $array_injected_into_doctrine /*array(
+            __NAMESPACE__ . '_entities' => array(
                 'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
                 'cache' => 'array',
-                'paths' => array(__DIR__ . '/../src/' . __NAMESPACE__ . '/Entity')
+                'paths' => array(__DIR__ . '/../src/'. __NAMESPACE__ . '/Entity')
             ),
             'orm_default' => array(
                 'drivers' => array(
-                    __NAMESPACE__ . '\Entity' => __NAMESPACE__ . '_driver'
+                    __NAMESPACE__ . '\Entity' => __NAMESPACE__ . '_entities'
                 )
-            )
-        )
+            ),
+            'Uzytkownik' . '_entities' => array(
+                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+                'cache' => 'array',
+                'paths' => array(__DIR__ . '/../src/'. 'Uzytkownik' . '/Entity')
+            ),
+            'Application' . '_entities' => array(
+                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+                'cache' => 'array',
+                'paths' => array(__DIR__ . '/../src/'. 'Application' . '/Entity')
+            ),
+            'orm_default' => array(
+                'drivers' => array(
+                    'Uzytkownik' . '\Entity' => 'Uzytkownik' . '_entities',
+                    'Application' . '\Entity' => 'Application' . '_entities'
+                )
+            ),
+           
+            
+            
+        ) */
     )
 );
