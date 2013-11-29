@@ -78,9 +78,9 @@ class Osoba
     private $plec;
 
     /**
-     * @var boolean
+     * @var integer
      *
-     * @ORM\Column(name="poziom", type="boolean", nullable=false)
+     * @ORM\Column(name="poziom", type="integer", nullable=false)
      */
     private $poziom = '0';
 
@@ -297,7 +297,7 @@ class Osoba
     /**
      * Set poziom
      *
-     * @param boolean $poziom
+     * @param integer $poziom
      * @return Osoba
      */
     public function setPoziom($poziom)
@@ -310,7 +310,7 @@ class Osoba
     /**
      * Get poziom
      *
-     * @return boolean 
+     * @return integer 
      */
     public function getPoziom()
     {

@@ -86,17 +86,19 @@ return array(
             'uzytkownik' => array(
                 'type'    => 'Segment',
                     'options' => array(
-                        'route'    => '/uzytkownik[/:controller[/:action[/:id]]]',
+                        'route'    => '/uzytkownik[/:controller[/:action[/:id]]][/s:page][/]',
                         'constraints' => array(
-                                'controller' => '[a-zA-Z][a-zA-Z0-9_\-]*',
-                                'action'     => '[a-zA-Z][a-zA-Z0-9_\-]*',
+                                'controller' => '[a-zA-Z]{2}[a-zA-Z0-9_\-]*',
+                                'action'     => '[a-zA-Z]{2}[a-zA-Z0-9_\-]*',
                                 'id'     => '[0-9]*',
+                                'page'     => '[0-9]*',
                             ),
                         'defaults' => array(
                             '__NAMESPACE__' => 'Uzytkownik\Controller',
                             'controller'    => 'Logowanie',
                             'action'        => 'index',
-                            'id' => 0
+                            'id' => 0,
+                            'page' => 1
                         ),
                     ),
                 'may_terminate' => true,
@@ -167,7 +169,7 @@ return array(
         'template_map' => array(
             'layout/layout'           => __DIR__ . '/../view/layout/layout.phtml',
             'application/index/index' => __DIR__ . '/../view/application/index/index.phtml',
-
+            'partial/paginacja_part' => __DIR__ . '/../view/partial/paginacja_partial.phtml',
             'error/404'               => __DIR__ . '/../view/error/404.phtml',
             'error/index'             => __DIR__ . '/../view/error/index.phtml',
         ),

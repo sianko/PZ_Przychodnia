@@ -1,0 +1,26 @@
+<?php if($this->stronicowanieStrony->pageCount > 1) : ?>
+   
+<div class="text-center">
+    <ul class="pagination">
+      <?php if(isset($this->stronicowanieStrony->previous)) : ?>
+      <li><a href="<?php echo $this->url($this->route, array('page' => $this->stronicowanieStrony->first), false, true); ?>" title="Początek">&laquo;</a></li>
+      <li><a href="<?php echo $this->url($this->route, array('page' => $this->stronicowanieStrony->previous), false, true); ?>" title="Poprzednia">&lsaquo;
+      <?php endif; ?>
+      </a></li>  
+        <?php foreach ($this->stronicowanieStrony->pagesInRange as $page): ?>
+          <?php if ($page != $this->stronicowanieStrony->current): ?>
+            <li><a href="<?php echo $this->url($this->route, array('page' => $page), false, true); ?>">
+                <?php echo $page; ?>
+            </a> </li>
+          <?php else: ?>
+            <li class="active"><a><?php echo $page; ?></a></li>
+          <?php endif; ?>
+        <?php endforeach; 
+        if(isset($this->stronicowanieStrony->next)) : ?>
+        <li><a href="<?php echo $this->url($this->route, array('page' => $this->stronicowanieStrony->next), false, true); ?>" title="Następna">&rsaquo;</a></li>
+      <li><a href="<?php echo $this->url($this->route, array('page' => $this->stronicowanieStrony->last), false, true); ?>" title="Koniec">&raquo;</a></li>
+      <?php endif; ?>
+    </ul>
+</div>
+
+    <?php endif; ?>

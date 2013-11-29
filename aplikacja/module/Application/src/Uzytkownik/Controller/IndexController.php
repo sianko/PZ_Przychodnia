@@ -11,31 +11,26 @@ use Zend\Paginator\Paginator;
 
 class IndexController extends AbstractActionController
 {
-    protected $uzytkownikTable;
+    //protected $uzytkownikTable;
     
     public function indexAction()
     {
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        if(!$this->identity() || $this->identity()->poziom != 2) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie'));
+        else {
+            $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
-        $repository = $objectManager->getRepository('Application\Entity\Specjalnosc');
-        $queryBuilder = $repository->createQueryBuilder('Application\Entity\Specjalnosc');
-        
-        $query = $queryBuilder->getQuery();
-        //$query = $objectManager->createQuery($query);
+            $repository = $objectManager->getRepository('Application\Entity\Osoba');
+            $queryBuilder = $repository->createQueryBuilder('Application\Entity\Osoba');
+           
+            $query = $queryBuilder->getQuery();
 
-        $paginator = new Paginator(new DoctrinePaginator(new ORMPaginator($query)));
+            $paginator = new Paginator(new DoctrinePaginator(new ORMPaginator($query)));
 
-        $paginator->setCurrentPageNumber(1)
-                    ->setItemCountPerPage(5);
-                    
-        $queryBuilder->setFirstResult(($paginator->getCurrentPageNumber()-1)*$paginator->getItemCountPerPage())
-                     ->setMaxResults($paginator->getItemCountPerPage())
-                     ->orderBy($queryBuilder->getRootAlias().'.nazwa', 'ASC');
-        $all = $queryBuilder->getQuery()->execute();
-        
-        //Zend\Paginator\Paginator::setDefaultScrollingStyle('Sliding');
-        
-        return array('paginator' => $paginator, 'all' => $all);
+            $paginator->setCurrentPageNumber($this->params()->fromRoute('page', 0));
+            //$paginator->setDefaultItemCountPerPage(2);
+            
+            return array('all' => $paginator->getCurrentItems(), 'stronicowanieStrony' => $paginator->getPages('Sliding'));
+        }
     }
 
     public function dodajAction()
@@ -53,12 +48,12 @@ class IndexController extends AbstractActionController
         return array();
     }
     
-    public function getUzytkownikTable()
+    /*public function getUzytkownikTable()
      {
          if (!$this->uzytkownikTable) {
              $sm = $this->getServiceLocator();
              $this->uzytkownikTable = $sm->get('Uzytkownik\Model\UzytkownikTable');
          }
          return $this->uzytkownikTable;
-     }
+     }*/
 }

@@ -88,7 +88,8 @@ class LogowanieController extends AbstractActionController
                    		
                  }
             }
-        } 
+        } else return $this->redirect()->toRoute('uzytkownik', array('controller' => 'profil'));
+        
             return array('form' => $form, 'result' => $result);
             
     }
