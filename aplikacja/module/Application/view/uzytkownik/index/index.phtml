@@ -1,29 +1,48 @@
 <?php
 
- $title = 'Wszyscy użytkownicy';
+ $title = 'Specjalności';
  $this->headTitle($title);
+
+ 
  ?>
  <h1><?php echo $this->escapeHtml($title); ?></h1>
- <p>
-     <a href="<?php echo $this->url('uzytkownik', array('action'=>'dodaj'));?>">Dodaj użytkownika</a>
- </p>
 
- <table class="table">
- <tr>
-     <th>Imię</th>
-     <th>Nazwisko</th>
-     <th>&nbsp;</th>
- </tr>
- <?php foreach ($users as $user) : ?>
- <tr>
-     <td><?php echo $this->escapeHtml($user->imie);?></td>
-     <td><?php echo $this->escapeHtml($user->nazwisko);?></td>
-     <td>
-         <a href="<?php echo $this->url('uzytkownik',
-             array('controller'=>'index', 'action'=>'edytuj', 'id' => $user->id));?>">Zmień</a>
-         <a href="<?php echo $this->url('uzytkownik',
-             array('controller'=>'index', 'action'=>'usun', 'id' => $user->id));?>">Usuń</a>
-     </td>
- </tr>
- <?php endforeach; ?>
- </table>
+   <table class="table table-striped table-condensed alert alert-info">
+   <thead>
+   <tr>
+   <th>#</th><th>Nazwa specjalności</th>
+   </tr>
+   </thead>
+   <tbody>
+   <?php 
+    foreach($this->all as $specjalnosc) :
+   ?>
+
+    <?php echo '<tr><td>'.$specjalnosc->getId().'</td><td>'.$specjalnosc->getNazwa().'</td></tr>'; ?>
+    
+   <?php
+    endforeach;
+   ?>
+   </tbody>
+   </table>
+   
+    <?php if($this->paginator->pageCount) : ?>
+   
+<p class="text-center">
+    <ul class="pagination">
+      <li><a href="#">&laquo;</a></li>
+        <?php foreach ($this->paginator->pagesInRange as $page): print_r($page); exit(); ?>
+          <?php if ($page != $this->current): ?>
+            <li><a href="<?php echo $this->url($this->route, array('page' => $page)); ?>">
+                <?php echo $page; ?>
+            </a> </li>
+          <?php else: ?>
+            <li class="active"><?php echo $page; ?></li>
+          <?php endif; ?>
+        <?php endforeach; ?>
+      <li><a href="#">&raquo;</a></li>
+    </ul>
+</p>
+
+    <?php endif; ?>
+ 

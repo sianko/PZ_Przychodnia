@@ -10,8 +10,7 @@
 
 /* Własna konfiguracja Doctrine */
 $MY_NAMESPACES_ENTITY = array(
-    'Application',
-    'Uzytkownik'
+    'Application'
 );
 
 $array_injected_into_doctrine = array();
