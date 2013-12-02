@@ -16,6 +16,7 @@ use CustomZend\Authentication\Adapter\SaltedAuthAdapter as AuthAdapter;
 
 use Uzytkownik\Model\Uzytkownik;
 use Uzytkownik\Form\AuthForm;
+use Uzytkownik\Form\AuthFilter;
 
 class LogowanieController extends AbstractActionController
 {
@@ -29,8 +30,8 @@ class LogowanieController extends AbstractActionController
 
             $request = $this->getRequest();
             if ($request->isPost()) {
-                $authFormFilters = new Uzytkownik();
-                $form->setInputFilter($authFormFilters->getInputFilter());	
+                
+                $form->setInputFilter(new AuthFilter());	
                 $form->setData($request->getPost());
                  if ($form->isValid()) {
                     $data = $form->getData();

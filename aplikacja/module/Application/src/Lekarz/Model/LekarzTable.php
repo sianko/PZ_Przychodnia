@@ -1,9 +1,9 @@
 <?php
-namespace Uzytkownik\Model;
+namespace Lekarz\Model;
 
  use Zend\Db\TableGateway\TableGateway;
 
- class UzytkownikTable
+ class LekarzTable
  {
      protected $tableGateway;
 
@@ -18,7 +18,7 @@ namespace Uzytkownik\Model;
          return $resultSet;
      }
 
-     public function getUzytkownik($id)
+     public function getLekarz($id)
      {
          $id  = (int) $id;
          $rowset = $this->tableGateway->select(array('id' => $id));
@@ -29,37 +29,35 @@ namespace Uzytkownik\Model;
          return $row;
      }
 
-     public function saveUzytkownik(Uzytkownik $uzytkownik)
+     public function saveLekarz(Lekarz $lekarz)
      {
          $data = array(
-             'id' => $uzytkownik->id,
-             'imie' => $uzytkownik->imie,
-             'nazwisko' => $uzytkownik->nazwisko,
-             'pesel' => $uzytkownik->pesel,
-             'adres' => $uzytkownik->adres,
-             'telefon' => $uzytkownik->telefon,
-             'email' => $uzytkownik->email,
-             'data_ur' => $uzytkownik->data_ur,
-             'plec' => $uzytkownik->plec,
-             'poziom' => $uzytkownik->poziom,
-             'haslo' => $uzytkownik->haslo,
-             'sol' => $uzytkownik->sol
+             'id' => $lekarz->id,
+             'tytul_naukowy' => $lekarz->tytul_naukowy,
+             'grafik' => $lekarz->grafik,
+             
+             'os_id' => $lekarz->os_id,
+             'spec_id' => $lekarz->spec_id
          );
 
-         $id = (int) $uzytkownik->id;
+         $id = (int) $lekarz->id;
          if ($id == 0) {
              $this->tableGateway->insert($data);
          } else {
-             if ($this->getUzytkownik($id)) {
+             if ($this->getLekarz($id)) {
                  $this->tableGateway->update($data, array('id' => $id));
              } else {
-                 throw new \Exception('Uzytkownik id does not exist');
+                 throw new \Exception('Lekarz id does not exist');
              }
          }
      }
 
-     public function deleteUzytkownik($id)
+     public function deleteLekarz($id)
      {
          $this->tableGateway->delete(array('id' => (int) $id));
      }
+     
+     
+     
+     
  }

@@ -84,3 +84,16 @@ footer p{
 	color: #1188ff;
 }
 
+.popover {
+	max-width: 900px;
+	width: auto;
+}
+
+.dropdown-menu { 
+	max-height: 270px; 
+	overflow-y: auto; 
+}
+
+.formularz ul{
+	color: #ce0000;
+}

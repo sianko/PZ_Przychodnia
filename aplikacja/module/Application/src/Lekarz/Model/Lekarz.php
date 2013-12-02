@@ -1,5 +1,5 @@
 <?php
-namespace Uzytkownik\Model;
+namespace Lekarz\Model;
 
 use Zend\InputFilter\Factory as InputFactory;
 use Zend\InputFilter\InputFilter;
@@ -7,35 +7,33 @@ use Zend\InputFilter\InputFilterAwareInterface;
 use Zend\InputFilter\InputFilterInterface;
 use Zend\Validator\Digits as Digits;
 
- class Uzytkownik  implements InputFilterAwareInterface
+use Uzytkownik\Controller\Uzytkownik
+
+ class Lekarz  implements InputFilterAwareInterface
  {
      public $id;
-     public $imie;
-     public $nazwisko;
-     public $pesel;
-     public $adres;
-     public $telefon;
-     public $email;
-     public $data_ur;
-     public $plec;
-     public $poziom;
-     public $haslo;
-     public $sol;
+     public $tytul_naukowy;
+     public $grafik;
+     public $os_id;
+     public $spec_id;
+     
+     /**
+      * Object Uzytkownik $osoba
+      */
+     public $osoba = null;
+     
+     /**
+      * Object Specjalnosc $osoba
+      */
+     public $specjalnosc = null;
 
      public function exchangeArray($data)
      {
          $this->id     = (!empty($data['id'])) ? $data['id'] : null;
-         $this->imie   = (!empty($data['imie'])) ? $data['imie'] : null;
-         $this->nazwisko = (!empty($data['nazwisko'])) ? $data['nazwisko'] : null;
-         $this->pesel = (!empty($data['pesel'])) ? $data['pesel'] : null;
-         $this->adres = (!empty($data['adres'])) ? $data['adres'] : null;
-         $this->telefon = (!empty($data['telefon'])) ? $data['telefon'] : null;
-         $this->email = (!empty($data['email'])) ? $data['email'] : null;
-         $this->data_ur = (!empty($data['data_ur'])) ? $data['data_ur'] : null;
-         $this->plec = (!empty($data['plec'])) ? $data['plec'] : null;
-         $this->poziom = (!empty($data['poziom'])) ? $data['poziom'] : null;
-         $this->haslo = (!empty($data['haslo'])) ? $data['haslo'] : null;
-         $this->sol = (!empty($data['sol'])) ? $data['sol'] : null;
+         $this->tytul_naukowy   = (!empty($data['tytul_naukowy'])) ? $data['tytul_naukowy'] : null;
+         $this->grafik = (!empty($data['grafik'])) ? $data['grafik'] : null;
+         $this->os_id = (!empty($data['os_id'])) ? $data['os_id'] : null;
+         $this->spec_id = (!empty($data['spec_id'])) ? $data['spec_id'] : null;
          
      }
      

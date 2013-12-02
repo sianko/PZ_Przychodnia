@@ -62,4 +62,5 @@ class Specjalnosc
     {
         return $this->nazwa;
     }
+    
 }

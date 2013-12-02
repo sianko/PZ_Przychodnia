@@ -79,8 +79,14 @@
                     <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Panel Recepcjonisty<b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                  <li><a href="#">Użytkownicy</a></li>
+                                  <li><a href="<?php echo $this->url('uzytkownik', array('action' => 'index')); ?>">Użytkownicy</a></li>
                                   <li><a href="#">Wizyty</a></li>
+                                  <li class="divider"></li>
+                                  <li><a href="<?php echo $this->url('lekarz', array('action' => 'edytuj', 'id' => 0)); ?>">Dodaj lekarza</a></li>
+                                  <li><a href="<?php echo $this->url('lekarz'); ?>">Lekarze</a></li>
+                                  <li class="divider"></li>
+                                  <li><a href="#">Dodaj pacjenta</a></li>
+                                  <li><a href="#">Pacjenci</a></li>
                                   <li class="divider"></li>
                                   <li><a href="<?php echo $this->url('uzytkownik', array('controller' => 'profil')); ?>">Mój profil</a></li>
                               </ul>

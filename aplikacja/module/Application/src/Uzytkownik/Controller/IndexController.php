@@ -32,6 +32,28 @@ class IndexController extends AbstractActionController
             return array('all' => $paginator->getCurrentItems(), 'stronicowanieStrony' => $paginator->getPages('Sliding'));
         }
     }
+    
+    public function listaOsobSkroconaAction(){
+        if(!$this->identity() || $this->identity()->poziom != 2) return array('wynik' => '');
+        
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $repository = $objectManager->getRepository('Application\Entity\Osoba');
+        $queryBuilder = $repository->createQueryBuilder('Application\Entity\Osoba');
+        $queryBuilder->select($queryBuilder->getRootAlias().'.id');
+        $queryBuilder->addSelect($queryBuilder->getRootAlias().'.imie');
+        $queryBuilder->addSelect($queryBuilder->getRootAlias().'.nazwisko');
+        $queryBuilder->addSelect($queryBuilder->getRootAlias().'.pesel');
+        $query = $queryBuilder->getQuery();
+        
+        $lista = $query->execute();
+
+        $request = new \Zend\Http\Request();
+        $request->setMethod(\Zend\Http\Request::METHOD_POST);
+        
+        $request->getPost()->set('foo', 'bar');
+        
+        return array('wynik' => \Zend\Json\Json::encode($lista, true), 'list' => $lista, 'request'=>$this->getRequest());
+    }
 
     public function dodajAction()
     {
@@ -48,12 +70,4 @@ class IndexController extends AbstractActionController
         return array();
     }
     
-    /*public function getUzytkownikTable()
-     {
-         if (!$this->uzytkownikTable) {
-             $sm = $this->getServiceLocator();
-             $this->uzytkownikTable = $sm->get('Uzytkownik\Model\UzytkownikTable');
-         }
-         return $this->uzytkownikTable;
-     }*/
 }

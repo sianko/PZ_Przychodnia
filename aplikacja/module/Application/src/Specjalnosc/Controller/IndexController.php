@@ -1,6 +1,6 @@
 <?php
 
-namespace Uzytkownik\Controller;
+namespace Specjalnosc\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Application\Entity as DB;
@@ -11,21 +11,24 @@ use Zend\Paginator\Paginator;
 
 class IndexController extends AbstractActionController
 {
-    protected $uzytkownikTable;
     
-    public function indexAction()
+    private function queryCreator()
     {
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
         $repository = $objectManager->getRepository('Application\Entity\Specjalnosc');
         $queryBuilder = $repository->createQueryBuilder('Application\Entity\Specjalnosc');
         
-        $query = $queryBuilder->getQuery();
-        //$query = $objectManager->createQuery($query);
-
+        return $queryBuilder->getQuery();
+    }
+    
+    public function indexAction()
+    {
         $paginator = new Paginator(new DoctrinePaginator(new ORMPaginator($query)));
 
         $paginator->setCurrentPageNumber($this->params()->fromRoute('page', 0));
+        
+        $query = $this->queryCreator();
         
         return array('all' => $paginator->getCurrentItems(), 'stronicowanieLiczbaStron' => $paginator->getCurrentItemCount(), 'stronicowanieStrony' => $paginator->getPages('Sliding'));
     }
@@ -45,12 +48,4 @@ class IndexController extends AbstractActionController
         return array();
     }
     
-    public function getUzytkownikTable()
-     {
-         if (!$this->uzytkownikTable) {
-             $sm = $this->getServiceLocator();
-             $this->uzytkownikTable = $sm->get('Uzytkownik\Model\UzytkownikTable');
-         }
-         return $this->uzytkownikTable;
-     }
 }

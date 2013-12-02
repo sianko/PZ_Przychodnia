@@ -25,17 +25,19 @@
   </div>
   <div class="col-md-6 well">
   <?php 
-  echo '<h3 style="margin-top: 0;">'.$this->escapeHtml($user->imie . ' ' . $user->nazwisko).' <a href="" title="" class="btn btn-warning btn-xs">Edytuj</a></h3>';
-  echo '<p><span class="label label-default">PESEL</span> '.$this->escapeHtml($user->pesel).'</p>';
-  echo '<p><span class="label label-default">Data urodzenia</span> '.$this->escapeHtml($user->data_ur).'</p>';
-  echo '<p><span class="label label-default">Adres</span> '.$this->escapeHtml($user->adres).'</p>';
-  echo '<p><span class="label label-default">E-Mail</span> '.$this->escapeHtml($user->email).'</p>';
-  if(!empty($user->telefon)) echo '<p><span class="label label-default">Telefon</span> '.$this->escapeHtml($user->telefon).'</p>';   
+  echo '<h3 style="margin-top: 0;">'.$this->escapeHtml($user->imie . ' ' . $user->nazwisko).' <a href="" title="" class="btn btn-warning btn-xs">Edytuj</a></h3>
+  <dl class="dl-horizontal">';
+  echo '<dt><span>PESEL</span></dt><dd> '.$this->escapeHtml($user->pesel).'</dd>';
+  echo '<dt><span>Data urodzenia</span></dt><dd> '.$this->escapeHtml($user->data_ur).'</dd>';
+  echo '<dt><span>Adres</span></dt><dd> '.$this->escapeHtml($user->adres).'</dd>';
+  echo '<dt><span>E-Mail</span></dt><dd> '.$this->escapeHtml($user->email).'</dd>';
+  if(!empty($user->telefon)) echo '<dt><span>Telefon</span></dt><dd> '.$this->escapeHtml($user->telefon).'</dd>';   
   
  
  ?>
-  
-  
+  </dl>
+
+
   
   </div>
 </div>

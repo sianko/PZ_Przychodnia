@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="lekarze", indexes={@ORM\Index(name="fk_lekarze_spec", columns={"spec_id"}), @ORM\Index(name="fk_lekarze_os", columns={"os_id"})})
  * @ORM\Entity
  */
-class Lekarz
+class Lekarz implements OsobaInterface
 {
     /**
      * @var integer
@@ -19,12 +19,12 @@ class Lekarz
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    private $lid;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="tytul_naukowy", type="integer", nullable=true)
+     * @ORM\Column(name="tytul_naukowy", type="string", length=15, nullable=true)
      */
     private $tytulNaukowy;
 
@@ -45,7 +45,7 @@ class Lekarz
     /**
      * @var \Application\Entity\Osoba
      *
-     * @ORM\ManyToOne(targetEntity="Application\Entity\Osoba")
+     * @ORM\ManyToOne(targetEntity="Application\Entity\Osoba", cascade={"persist"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="os_id", referencedColumnName="id")
      * })
@@ -55,7 +55,7 @@ class Lekarz
     /**
      * @var \Application\Entity\Specjalnosc
      *
-     * @ORM\ManyToOne(targetEntity="Application\Entity\Specjalnosc")
+     * @ORM\ManyToOne(targetEntity="Application\Entity\Specjalnosc", cascade={"persist"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="spec_id", referencedColumnName="id")
      * })
@@ -65,19 +65,19 @@ class Lekarz
 
 
     /**
-     * Get id
+     * Get lid
      *
      * @return integer 
      */
-    public function getId()
+    public function getLid()
     {
-        return $this->id;
+        return $this->lid;
     }
 
     /**
      * Set tytulNaukowy
      *
-     * @param integer $tytulNaukowy
+     * @param string $tytulNaukowy
      * @return Lekarz
      */
     public function setTytulNaukowy($tytulNaukowy)
@@ -90,7 +90,7 @@ class Lekarz
     /**
      * Get tytulNaukowy
      *
-     * @return integer 
+     * @return string 
      */
     public function getTytulNaukowy()
     {
@@ -119,6 +119,56 @@ class Lekarz
     {
         return $this->grafik;
     }
+    
+    
+    /**
+     * Convert string of grafik to array
+     *
+     * @return array
+     */
+    public function getGrafikArray()
+    {
+        if(empty($this->grafik)) return array();
+        
+        $dni = explode('%', $this->grafik);
+        
+        if(count($dni) < 7) return array();
+        
+        foreach($dni as $d)
+        {
+            $wynik[] = explode(';', $d);
+        }
+        
+        return $wynik;
+    }
+    
+    /**
+     * Convert array to string
+     *
+     * @param array $array
+     * @return Lekarz
+     */
+    public function setGrafikArray($array)
+    {
+        if(!is_array($array)){
+            throw new Exception("Parametr nie jest tablicą.");
+        }
+        
+        
+        foreach($array as $dzien)
+        {
+            if(!is_array($dzien)){
+                throw new Exception("Parametr nie jest dwuwymiarową tablicą.");
+            }
+            
+            $wynik[] = implode(';', $dzien);
+        }
+        
+        $this->grafik = implode('%', $wynik);
+
+        return $this;
+    }
+    
 
     /**
      * Set minutNaPacjenta
@@ -163,6 +213,7 @@ class Lekarz
      */
     public function getOs()
     {
+        if($this->os == null) $this->os = new \Application\Entity\Osoba();
         return $this->os;
     }
 
@@ -186,6 +237,271 @@ class Lekarz
      */
     public function getSpec()
     {
+        if($this->spec == null) $this->spec = new \Application\Entity\Specjalnosc();
         return $this->spec;
     }
+    
+    
+    
+    /**
+     *  OsobaInterface Implementation
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set imie
+     *
+     * @param string $imie
+     * @return Lekarz
+     */
+    public function setImie($imie)
+    {
+         $this->getOs()->setImie($imie);
+
+        return $this;
+    }
+
+    /**
+     * Get imie
+     *
+     * @return string 
+     */
+    public function getImie()
+    {
+        return  $this->getOs()->getImie();
+    }
+
+    /**
+     * Set nazwisko
+     *
+     * @param string $nazwisko
+     * @return Lekarz
+     */
+    public function setNazwisko($nazwisko)
+    {
+        $this->getOs()->setNazwisko($nazwisko);
+
+        return $this;
+    }
+
+    /**
+     * Get nazwisko
+     *
+     * @return string 
+     */
+    public function getNazwisko()
+    {
+        return $this->getOs()->getNazwisko();
+    }
+
+    /**
+     * Set pesel
+     *
+     * @param string $pesel
+     * @return Lekarz
+     */
+    public function setPesel($pesel)
+    {
+        $this->getOs()->setPesel($pesel);
+
+        return $this;
+    }
+
+    /**
+     * Get pesel
+     *
+     * @return string 
+     */
+    public function getPesel()
+    {
+        return $this->getOs()->getPesel();
+    }
+
+    /**
+     * Set adres
+     *
+     * @param string $adres
+     * @return Lekarz
+     */
+    public function setAdres($adres)
+    {
+        $this->getOs()->setAdres($adres);
+
+        return $this;
+    }
+
+    /**
+     * Get adres
+     *
+     * @return string 
+     */
+    public function getAdres()
+    {
+        return $this->getOs()->getAdres();
+    }
+
+    /**
+     * Set telefon
+     *
+     * @param string $telefon
+     * @return Lekarz
+     */
+    public function setTelefon($telefon)
+    {
+        $this->getOs()->setTelefon($telefon);
+
+        return $this;
+    }
+
+    /**
+     * Get telefon
+     *
+     * @return string 
+     */
+    public function getTelefon()
+    {
+        return $this->getOs()->getTelefon();
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     * @return Lekarz
+     */
+    public function setEmail($email)
+    {
+        $this->getOs()->setEmail($email);
+
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string 
+     */
+    public function getEmail()
+    {
+        return $this->getOs()->getEmail();
+    }
+
+    /**
+     * Set dataUr
+     *
+     * @param \DateTime $dataUr
+     * @return Lekarz
+     */
+    public function setDataUr($dataUr)
+    {
+        $this->getOs()->setDataUr($dataUr);
+
+        return $this;
+    }
+
+    /**
+     * Get dataUr
+     *
+     * @return \DateTime 
+     */
+    public function getDataUr()
+    {
+        return $this->getOs()->getDataUr();
+    }
+
+    /**
+     * Set plec
+     *
+     * @param string $plec
+     * @return Lekarz
+     */
+    public function setPlec($plec)
+    {
+        $this->getOs()->setPlec($plec);
+
+        return $this;
+    }
+
+    /**
+     * Get plec
+     *
+     * @return string 
+     */
+    public function getPlec()
+    {
+        return $this->getOs()->getPlec();
+    }
+
+    /**
+     * Set poziom
+     *
+     * @param integer $poziom
+     * @return Lekarz
+     */
+    public function setPoziom($poziom)
+    {
+        $this->getOs()->setPoziom($poziom);
+
+        return $this;
+    }
+
+    /**
+     * Get poziom
+     *
+     * @return integer 
+     */
+    public function getPoziom()
+    {
+        return $this->getOs()->getPoziom();
+    }
+
+    /**
+     * Set haslo
+     *
+     * @param string $haslo
+     * @return Lekarz
+     */
+    public function setHaslo($haslo)
+    {
+        $this->getOs()->setHaslo($haslo);
+
+        return $this;
+    }
+
+    /**
+     * Get haslo
+     *
+     * @return string 
+     */
+    public function getHaslo()
+    {
+        return $this->getOs()->getHaslo();
+    }
+
+    /**
+     * Set sol
+     *
+     * @param string $sol
+     * @return Lekarz
+     */
+    public function setSol($sol)
+    {
+        $this->getOs()->setSol($sol);
+
+        return $this;
+    }
+
+    /**
+     * Get sol
+     *
+     * @return string 
+     */
+    public function getSol()
+    {
+        return $this->getOs()->getSol();
+    }
+    
 }

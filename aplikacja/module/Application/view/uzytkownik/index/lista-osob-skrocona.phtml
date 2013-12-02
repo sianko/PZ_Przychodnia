@@ -1,0 +1,17 @@
+<?php
+    /*$request = $this->request;
+    
+    if(!$request->isPost()){
+            $this->headScript()->appendScript('
+            $(document).ready(function (){
+                
+                  $.post("'.$this->url($this->route, array(), false, true).'",
+                  {"foo" : '.($this->wynik).'}, function(){ });
+            
+            });
+         ');
+    }*/
+
+    echo '{%CONTAINER_DATA%}'.$this->wynik.'{%CONTAINER_DATA%}';
+    
+?>

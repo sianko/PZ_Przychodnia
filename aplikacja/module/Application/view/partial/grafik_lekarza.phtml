@@ -1,0 +1,30 @@
+<?php if(is_array($this->grafik)) : 
+    $grafikPracy = $this->grafik;
+?>
+<div class="panel panel-default">   
+<table class="table table-condensed table-bordered text-center">
+<thead>
+<tr class="active"><th>Poniedziałek</th><th>Wtorek</th><th>Środa</th><th>Czwartek</th><th>Piątek</th><th>Sobota</th><th>Niedziela</th></tr>
+</thead>
+<tbody>
+<tr>
+<?php foreach($grafikPracy as $dzien) : ?>
+    
+    <td>
+    
+    <?php foreach($dzien as $godz) : 
+            if(!empty($godz)) :
+    ?>
+        <span class="badge"><?php echo $godz; ?></span><br />
+    <?php   endif;
+          endforeach;
+    ?>
+    
+    </td>
+    
+<?php endforeach; ?>
+</tr>
+</tbody>
+</table>
+</div>
+<?php endif; ?>

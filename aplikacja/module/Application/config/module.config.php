@@ -95,7 +95,7 @@ return array(
                             ),
                         'defaults' => array(
                             '__NAMESPACE__' => 'Uzytkownik\Controller',
-                            'controller'    => 'Logowanie',
+                            'controller'    => 'logowanie',
                             'action'        => 'index',
                             'id' => 0,
                             'page' => 1
@@ -117,7 +117,27 @@ return array(
                     ),
                 ),
             ),
-            
+            'lekarz' => array(
+                'type'    => 'Segment',
+                    'options' => array(
+                        'route'    => '/lekarze[/:controller[/:action[/:id]]][/spec/:category][/s:page][/]',
+                        'constraints' => array(
+                                'controller' => '[a-zA-Z]{2}[a-zA-Z0-9_\-]*',
+                                'action'     => '[a-zA-Z]{2}[a-zA-Z0-9_\-]*',
+                                'id'     => '[0-9]*',
+                                'page'     => '[0-9]*',
+                                'category' => '[0-9]*',
+                            ),
+                        'defaults' => array(
+                            '__NAMESPACE__' => 'Lekarz\Controller',
+                            'controller'    => 'profil',
+                            'action'        => 'index',
+                            'id' => 0,
+                            'page' => 1,
+                            'category' => 0
+                        ),
+                    ),
+            ),
             
         ),
         
@@ -158,6 +178,7 @@ return array(
             'Uzytkownik\Controller\Index' => 'Uzytkownik\Controller\IndexController',
             'Uzytkownik\Controller\Logowanie' => 'Uzytkownik\Controller\LogowanieController',
             'Uzytkownik\Controller\Profil' => 'Uzytkownik\Controller\ProfilController',
+            'Lekarz\Controller\Profil' => 'Lekarz\Controller\ProfilController',
         ),
     ),
     'view_manager' => array(
@@ -170,6 +191,7 @@ return array(
             'layout/layout'           => __DIR__ . '/../view/layout/layout.phtml',
             'application/index/index' => __DIR__ . '/../view/application/index/index.phtml',
             'partial/paginacja_part' => __DIR__ . '/../view/partial/paginacja_partial.phtml',
+            'partial/grafik_lekarza' => __DIR__ . '/../view/partial/grafik_lekarza.phtml',
             'error/404'               => __DIR__ . '/../view/error/404.phtml',
             'error/index'             => __DIR__ . '/../view/error/index.phtml',
         ),

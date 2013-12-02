@@ -1,0 +1,139 @@
+<?php 
+    
+    
+    $this->headScript()->appendScript('
+    
+        function showUser()
+        {
+            if (window.XMLHttpRequest)
+              {// code for IE7+, Firefox, Chrome, Opera, Safari
+              xmlhttp=new XMLHttpRequest();
+              }
+            else
+              {// code for IE6, IE5
+              xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+              }
+            xmlhttp.onreadystatechange=function()
+              {
+              if (xmlhttp.readyState==4 && xmlhttp.status==200)
+                {
+                    //document.getElementById("txtHint").innerHTML=xmlhttp.responseText;
+                    var resultat = xmlhttp.responseText;
+                    var splitRezultat = rezultat.split("{%CONTAINER_DATA%}");
+                    var json = splitRezultat[1];
+                    obj = JSON.parse(json);
+                    document.getElementById("ttt").innerHTML=json;
+                    $.each(obj,function(key,val){
+                       $("#istniejacyUzytkownicy").append("<option value=\""+ val.id + "\">" + val.imie + " " + val.nazwisko + " [" + val.pesel + "]</option>"); 
+                    });
+                    
+                    //return JSON.parse(json);
+                    
+                }
+              }
+            xmlhttp.open("POST","'.($this->url('uzytkownik', array('controller'=>'index', 'action' => 'lista-osob-skrocona'))).'",true);
+            xmlhttp.send();
+        }
+        
+        
+        
+        $(document).ready(function (){ 
+           $("#selectExistedUser").click(function (){ 
+            //var obj = showUser();
+            
+            showUser();
+                    
+            $("#selectOsoby").fadeIn();
+            $("#polaDaneOsobowe").fadeOut();
+            });
+           
+           $("#hideExistedUser").click(function (){
+                $("#selectOsoby").fadeOut();
+                $("#polaDaneOsobowe").fadeIn();
+           });
+           
+        });
+        
+        
+        ');
+    
+    
+    
+    
+    $tytul = ($this->edycjaCzyDodawanie ? 'Edycja' : 'Dodawanie').' lekarza';
+    $this->headTitle($tytul);
+    echo '<h1>'.$tytul.'</h1>';
+    
+    if(is_array($this->msg) && $this->msg[0]){
+        echo '<div class="alert alert-success">'.$this->msg[1].'</div>';
+        if(isset($this->msg[2])) echo '<div class="alert alert-info">Dla nowego konta zostało wygenerowane hasło: <b>'.$this->msg[2].'</b></div>';
+        
+    } else if(is_array($this->msg)){
+        echo '<div class="alert alert-danger">'.$this->msg[1].'</div>';
+    }
+    
+    $formularz = $this->form;
+    
+    $formularz->prepare();
+    echo $this->form()->openTag($formularz);
+?>
+<div id="ttt" onclick="showUser()">dd</div>
+
+<div class="row">
+    <div class="col-md-6 col-md-offset-1" style="border-right: 1px solid #ccc;">
+        <dl class="dl-horizontal formularz" style="width: 430px; margin-bottom: 0;">
+          <dt>Tytuł</dt><dd><?php echo $this->formRow($form->get('tytul_naukowy')); ?></dd>
+          <dt>Specjalność</dt><dd><?php echo $this->formRow($form->get('specjalnosc')); ?></dd>
+          <dt>Śr. czas wizyty</dt><dd><?php echo $this->formRow($form->get('czas_na_pacjenta')); ?> min</dd>
+          
+          <dt></dt><dd style="padding-top: 20px;">Grafik pracy:</dd>
+          <dt>Pn.</dt><dd><?php echo $this->formRow($form->get('grafik_0')); ?></dd>
+          <dt>Wt.</dt><dd><?php echo $this->formRow($form->get('grafik_1')); ?></dd>
+          <dt>Śr.</dt><dd><?php echo $this->formRow($form->get('grafik_2')); ?></dd>
+          <dt>Cz.</dt><dd><?php echo $this->formRow($form->get('grafik_3')); ?></dd>
+          <dt>Pt.</dt><dd><?php echo $this->formRow($form->get('grafik_4')); ?></dd>
+          <dt>Sb.</dt><dd><?php echo $this->formRow($form->get('grafik_5')); ?></dd>
+          <dt>Nd.</dt><dd><?php echo $this->formRow($form->get('grafik_6')); ?></dd>
+         
+          <dt></dt><dd style="padding-top: 20px;"><span id="selectExistedUser" class="btn btn-xs btn-info glyphicon glyphicon-open" title="istniejący użytkownik"></span> Dane osobowe: </dd>
+        </dl>
+        <dl class="dl-horizontal formularz hide" id="selectOsoby" style="width: 430px;">
+        <dt>Wybierz</dt><dd style="padding-top: 20px;"><select id="istniejacyUzytkownicy" class="form-control"></select></dd>
+        <dt></dt><dd style="padding-top: 20px;"><span id="hideExistedUser" class="btn btn-xs btn-danger">pokaż formularz danych osobowych</span></dd>
+        </dl>
+        <dl class="dl-horizontal formularz" id="polaDaneOsobowe" style="width: 430px;">
+          <dt>Imię</dt><dd><?php echo $this->formRow($form->get('imie')); ?></dd>
+          <dt>Nazwisko</dt><dd><?php echo $this->formRow($form->get('nazwisko')); ?></dd>
+          <dt>PESEL</dt><dd><?php echo $this->formRow($form->get('pesel')); ?></dd>
+          
+          <dt></dt><dd style="padding-top: 5px;"><small><span style="padding-right: 50px;">dzień</span><span style="padding-right: 50px;">miesiąc</span>rok</small></dd>
+          <dt>Data ur.</dt><dd><?php echo $this->formRow($form->get('data_ur_0')).$this->formRow($form->get('data_ur_1')).$this->formRow($form->get('data_ur_2')); ?></dd>
+          <dt>Adres</dt><dd><?php echo $this->formRow($form->get('adres')); ?></dd>
+          <dt>E-mail</dt><dd><?php echo $this->formRow($form->get('email')); ?></dd>
+          <dt>Telefon</dt><dd><?php echo $this->formRow($form->get('telefon')); ?></dd>
+          <dt>Płeć</dt><dd><?php echo $this->formRow($form->get('plec')); ?></dd>
+        </dl>  
+        
+        <dl class="dl-horizontal formularz" style="width: 430px;">
+          <dt></dt><dd><br /><?php echo $this->formSubmit($form->get('submit')); ?></dd>
+        </dl>
+    </div>
+    <div class="col-md-3">
+        <a href="<?php echo $this->url('lekarz', array('action' => 'index')); ?>" title="" class="btn btn-lg btn-success" style="margin-top: 50%;">
+        <span class="glyphicon glyphicon-list"></span><br />Lista wszystkich lekarzy</a>
+        
+    <?php if($this->identity() && $this->identity()->poziom == 2) : ?>    
+        <br />
+        <a href="<?php echo $this->url('uzytkownik', array('action' => 'index')); ?>" title="" class="btn btn-lg btn-primary" style="margin-top: 20px; width: 224px;">
+        <span class="glyphicon glyphicon-user"></span><br />Lista użytkowników</a>
+        <br />
+        <a href="<?php echo $this->url($this->route, array('id' => 0), false, true); ?>" title="" class="btn btn-lg btn-default" style="margin-top: 20px; width: 224px;">
+        <span class="glyphicon glyphicon-plus-sign"></span><br />Dodaj lekarza</a>
+    <?php endif; ?>
+        
+    </div>
+</div>
+<?php
+    echo $this->formRow($form->get('lid'));
+    echo $this->form()->closeTag($formularz);
+?>

@@ -1,0 +1,98 @@
+<?php
+
+ $title = 'Lekarze';
+ $this->headTitle($title);
+ $this->headScript()->appendScript('
+    $(document).ready(function (){
+        $(".tooltip-btn").mouseover(function (e){
+            $(this).tooltip(\'show\');
+        });
+        
+        $(".tooltip-btn").mouseout(function (e){
+            $(this).tooltip(\'hide\');
+        });
+        
+         $(".grafik-open").popover({ html : true});
+        
+        $(".grafik-open").mouseover(function (e){
+            $(this).popover(\'show\');
+        });
+        
+        $(".grafik-open").mouseout(function (e){
+            $(this).popover(\'hide\');
+        });
+    });
+ ');
+ 
+ 
+ ?>
+ <div class="row">
+     <div class="col-md-9">
+        <h1 style="margin-top: 5px;">
+        <?php 
+            echo $this->escapeHtml($title); 
+        ?>    
+        </h1>
+     </div>
+    <div class="col-md-3 text-right">
+        <div class="btn-group text-left" style="margin-top: 5px;">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            Wybierz specjalizację <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <?php
+               echo '<li><a href="'.($this->url($this->route, array('category'=>0), false, true)).'">Wszystkie</a></li>';
+               
+               foreach($this->specjalnosci as $specjalnosc) { 
+                echo '<li><a href="'.($this->url($this->route, array('category'=>$specjalnosc->getId()), false, true)).'">'.$this->escapeHtml($specjalnosc->getNazwa()).'</a></li>';
+               }
+            ?>
+          </ul>
+        </div>
+    </div>
+</div>
+ 
+
+ 
+<?php if($this->stronicowanieStrony->currentItemCount > 0) { ?>
+ 
+  
+   <?php 
+    $lp = 1; 
+    foreach($this->all as $entityObject) :
+   ?>
+
+    <div class="panel panel-default">
+        <table class="table table-bordered">
+        <tr>
+           <td>
+           <h3 style="margin-top: 8px; margin-bottom: 8px;"><small>
+              <?php 
+                echo $this->escapeHtml($entityObject->getTytulNaukowy()).'</small> '.$this->escapeHtml($entityObject->getImie().' '.$entityObject->getNazwisko()); 
+                if($this->identity() && $this->identity()->poziom == 2) echo ' <a href="'.$this->url('lekarz', array('action' => 'edytuj', 'id' => $this->escapeHtml($entityObject->getLid()))).'" title="" class="btn btn-danger btn-xs">Edytuj</a>';
+              ?>
+              <br /><small><em><?php echo $this->escapeHtml($entityObject->getSpec()->getNazwa()); ?></em></small>
+            </h3>
+            </td>
+            <td style="vertical-align: middle; width: 320px;">
+                <a href="#" class="btn btn-success" title="">Zarejestruj się na wizytę!</a> 
+          
+                <span class="btn btn-info grafik-open" data-toggle="popover" title="" data-content="<?php echo $this->escapeHtml($this->partial('partial/grafik_lekarza', array('grafik'=>$entityObject->getGrafikArray(), 'lekarz_id' =>$entityObject->getLid()))); ?>" role="button" data-placement="left" data-original-title="Ogólny grafik pracy">Zobacz grafik</span> 
+            </td>
+        </tr>
+        </table>
+    </div>
+    
+   <?php
+    endforeach;
+   ?>
+   
+<?php echo $this->partial('partial/paginacja_part', array(
+    'stronicowanieStrony' => $this->stronicowanieStrony)); ?>
+ 
+
+<?php 
+    } else { 
+        echo '<div class="alert alert-warning">Brak danych do wyświetlenia.</div>';
+    } 
+?>

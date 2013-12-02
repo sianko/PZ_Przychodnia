@@ -40,6 +40,7 @@ class Module
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                     'Uzytkownik' => __DIR__ . '/src/Uzytkownik',
+                    'Lekarz' => __DIR__ . '/src/Lekarz',
                 ),
             ),
         );
