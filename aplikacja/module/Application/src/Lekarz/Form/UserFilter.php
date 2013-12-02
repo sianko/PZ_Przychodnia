@@ -92,6 +92,7 @@ class UserFilter extends InputFilter
                     'options' => array(
 						'min'      => 1,
 						'max'      => 11,
+                        'message' => 'Dopuszczalne jest %min% do %max% znaków',
 					),
 				),
 			),
@@ -116,11 +117,16 @@ class UserFilter extends InputFilter
 			'validators' => array(
 				array(
 					'name'    => 'Digits',
-                    'options' => array(
+				),
+                array(
+					'name'    => 'StringLength',
+					'options' => array(
 						'min'      => 11,
 						'max'      => 11,
+                        'message' => 'PESEL musi mieć %max% znaków',
 					),
-				),
+                    
+				)
 			),
 		));	
 
@@ -130,11 +136,15 @@ class UserFilter extends InputFilter
 			'validators' => array(
 				array(
 					'name'    => 'Digits',
-                    'options' => array(
+				),
+                array(
+					'name'    => 'StringLength',
+					'options' => array(
 						'min'      => 1,
 						'max'      => 4,
+                        'message' => 'Wymagane jest od %min% do %max% znaków',
 					),
-				),
+				)               
 			),
 		));	
 	

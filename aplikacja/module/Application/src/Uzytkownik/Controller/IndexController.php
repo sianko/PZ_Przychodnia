@@ -34,7 +34,17 @@ class IndexController extends AbstractActionController
     }
     
     public function listaOsobSkroconaAction(){
-        if(!$this->identity() || $this->identity()->poziom != 2) return array('wynik' => '');
+        $get_id = 0;
+        
+        if(!$this->identity() || $this->identity()->poziom != 2){
+            return array('wynik' => '');
+        } /*else if($this->identity()->poziom == 1){
+            $get_id = $this->identity()->id; 
+        } else if($this->identity()->poziom != 2){
+            return array('wynik' => '');
+        } */
+        
+        //$get_id = (int)$this->params()->fromRoute('id', 0); 
         
         $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $repository = $objectManager->getRepository('Application\Entity\Osoba');
@@ -43,6 +53,11 @@ class IndexController extends AbstractActionController
         $queryBuilder->addSelect($queryBuilder->getRootAlias().'.imie');
         $queryBuilder->addSelect($queryBuilder->getRootAlias().'.nazwisko');
         $queryBuilder->addSelect($queryBuilder->getRootAlias().'.pesel');
+        
+        if($get_id > 0){
+            $queryBuilder->where($queryBuilder->getRootAlias().'.id = '.$get_id);
+        }
+        
         $query = $queryBuilder->getQuery();
         
         $lista = $query->execute();
@@ -50,7 +65,6 @@ class IndexController extends AbstractActionController
         $request = new \Zend\Http\Request();
         $request->setMethod(\Zend\Http\Request::METHOD_POST);
         
-        $request->getPost()->set('foo', 'bar');
         
         return array('wynik' => \Zend\Json\Json::encode($lista, true), 'list' => $lista, 'request'=>$this->getRequest());
     }

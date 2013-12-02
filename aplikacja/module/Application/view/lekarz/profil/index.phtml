@@ -69,7 +69,8 @@
            <h3 style="margin-top: 8px; margin-bottom: 8px;"><small>
               <?php 
                 echo $this->escapeHtml($entityObject->getTytulNaukowy()).'</small> '.$this->escapeHtml($entityObject->getImie().' '.$entityObject->getNazwisko()); 
-                if($this->identity() && $this->identity()->poziom == 2) echo ' <a href="'.$this->url('lekarz', array('action' => 'edytuj', 'id' => $this->escapeHtml($entityObject->getLid()))).'" title="" class="btn btn-danger btn-xs">Edytuj</a>';
+                if($this->identity() && ($this->identity()->poziom == 2 || $this->identity()->id == $entityObject->getId())) echo ' <a href="'.$this->url('lekarz', array('action' => 'edytuj', 'id' => $this->escapeHtml($entityObject->getLid()))).'" title="" class="btn btn-danger btn-xs">Edytuj</a> 
+                <a href="'.$this->url('lekarz', array('action' => 'usun', 'id' => $this->escapeHtml($entityObject->getLid()))).'" title="" class="btn btn-warning btn-xs">Usuń</a>';
               ?>
               <br /><small><em><?php echo $this->escapeHtml($entityObject->getSpec()->getNazwa()); ?></em></small>
             </h3>

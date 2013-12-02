@@ -24,6 +24,7 @@ class AuthFilter extends InputFilter
                             'encoding' => 'UTF-8',
                             'min'      => 11,
                             'max'      => 11,
+                            'message' => 'PESEL musi mieć %max% znaków',
                         ),
                     ),
                     new Digits(),

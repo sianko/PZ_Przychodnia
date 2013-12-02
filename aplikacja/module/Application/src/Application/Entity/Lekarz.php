@@ -248,7 +248,7 @@ class Lekarz implements OsobaInterface
      */
     public function getId()
     {
-        return $this->id;
+        return  $this->getOs()->getId();
     }
 
     /**

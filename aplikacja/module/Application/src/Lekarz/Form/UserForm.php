@@ -94,6 +94,19 @@ class UserForm extends Form
         }
         
         $this->add(array(
+            'name' => 'istniejacyUzytkownik',
+			'type' => 'Zend\Form\Element\Select',
+            'options' => array(
+				'value_options' => array('0' => 'wczytywanie...'),
+            ),
+            'attributes' => array(
+                'class' => 'form-control',
+                
+                'id' => 'istniejacyUzytkownicy'
+            )
+        ));
+        
+        $this->add(array(
             'name' => 'data_ur_0',
 			'type' => 'Zend\Form\Element\Select',
             'options' => array(
@@ -133,6 +146,16 @@ class UserForm extends Form
             'name' => 'lid',
             'attributes' => array(
                 'type'  => 'hidden',
+            ),
+        ));
+        
+        $this->add(array(
+            'name' => 'istniejacaOsoba',
+            'filter' => 'Int',
+            'attributes' => array(
+                'type'  => 'hidden',
+                'value' => '0',
+                'id' => 'swichtOsobaForm'
             ),
         ));
 
