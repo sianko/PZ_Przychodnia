@@ -1,6 +1,6 @@
 <?php
 
- $title = 'Lekarze';
+ $title = 'Moje specjalności';
  $this->headTitle($title);
  $this->headScript()->appendScript('
     $(document).ready(function (){
@@ -26,7 +26,8 @@
  
  
  ?>
- <div class="row">
+ 
+<div class="row">
      <div class="col-md-9">
         <h1 style="margin-top: 5px;">
         <?php 
@@ -36,22 +37,15 @@
      </div>
     <div class="col-md-3 text-right">
         <div class="btn-group text-left" style="margin-top: 5px;">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-            Wybierz specjalizację <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu">
-            <?php
-               echo '<li><a href="'.($this->url($this->route, array('category'=>0), false, true)).'">Wszystkie</a></li>';
-               
-               foreach($this->specjalnosci as $specjalnosc) { 
-                echo '<li><a href="'.($this->url($this->route, array('category'=>$specjalnosc->getId()), false, true)).'">'.$this->escapeHtml($specjalnosc->getNazwa()).'</a></li>';
-               }
-            ?>
-          </ul>
+          <a href="<?php echo $this->url('lekarz', array('controller'=>'profil', 'action'=>'edytuj')); ?>" class="btn btn-primary" >
+            <span class="glyphicon glyphicon-plus-sign"></span>
+             Dodaj specjalność
+          </a>
+
         </div>
     </div>
 </div>
- 
+
 
  
 <?php 

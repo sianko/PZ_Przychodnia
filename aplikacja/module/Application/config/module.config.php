@@ -192,6 +192,7 @@ return array(
             'application/index/index' => __DIR__ . '/../view/application/index/index.phtml',
             'partial/paginacja_part' => __DIR__ . '/../view/partial/paginacja_partial.phtml',
             'partial/grafik_lekarza' => __DIR__ . '/../view/partial/grafik_lekarza.phtml',
+            'partial/lista_lekarzy' => __DIR__ . '/../view/partial/lista_lekarzy.phtml',
             'error/404'               => __DIR__ . '/../view/error/404.phtml',
             'error/index'             => __DIR__ . '/../view/error/index.phtml',
         ),

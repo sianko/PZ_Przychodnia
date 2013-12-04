@@ -1,0 +1,48 @@
+<?php
+    $tytul = 'Nieobecność lekarza';
+    $this->headTitle($tytul);
+    $this->headScript()->appendScript('
+    $(document).ready(function (){
+        $(".tooltip-btn").mouseover(function (e){
+            $(this).tooltip(\'show\');
+        });
+    
+    });
+    ');
+ 
+    echo '<h1>'.$tytul.'</h1>';
+    echo '<div style="width: 560px; margin: 0 auto;">';
+    
+    if(isset($this->form))
+    {
+        $form = $this->form;
+         $form->prepare();
+         
+         echo $this->form()->openTag($form);
+         echo '<div class="alert alert-info"><p>Lekarz będzie nieobecny w dniach:</p>';
+         echo '<table class="table">
+         <thead>
+         <tr><td></td><td>dzień</td><td>mies.</td><td>rok</td><td>godz.</td><td>min.</td></tr></thead>
+         
+         <tr><td>Od</td>';
+         for($i=0; $i<=4; $i++) echo '<td>'.$this->formRow($form->get('data_od_'.$i)).'</td>';
+         echo '</tr><tr><td>Do</td>';
+         for($i=0; $i<=4; $i++) echo '<td>'.$this->formRow($form->get('data_do_'.$i)).'</td>';
+         echo '</tr></table>';
+         echo '<p class="text-center">'.$this->formSubmit($form->get('submit')).'</p>';
+         echo '</div>';
+         echo $this->form()->closeTag($form);
+    }
+    else if($this->msg[0] == 0){
+        echo '<div class="alert alert-danger">'.$this->msg[1].'</div>';
+    } else if($this->msg[0] == 1){
+        echo '<div class="alert alert-success text-center">'.$this->msg[1].'<br />
+        <p style="margin-top: 20px;"><a href="#" data-toggle="tooltip" title="" data-original-title="Wyślij informację o nieobecności zarejestrowanym na wiztytę pacjentom." class="btn btn-warning tooltip-btn"><span class="glyphicon glyphicon-share-alt"></span> Poinformuj pacjentów</a></p>
+        </div>';
+    }
+
+    
+    
+?> 
+
+</div>

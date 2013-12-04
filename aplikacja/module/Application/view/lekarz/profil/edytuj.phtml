@@ -71,7 +71,7 @@
     echo '<h1>'.$tytul.'</h1>';
     
     if(is_array($this->msg) && $this->msg[0] == 1){
-        echo '<div class="alert alert-success">'.$this->msg[1].'</div>';
+        echo '<div class="alert alert-success">'.$this->msg[1].' </div>';
         if(isset($this->msg[2])) echo '<div class="alert alert-info">Dla nowego konta zostało wygenerowane hasło: <b>'.$this->msg[2].'</b></div>';
         
     } else if(is_array($this->msg)){

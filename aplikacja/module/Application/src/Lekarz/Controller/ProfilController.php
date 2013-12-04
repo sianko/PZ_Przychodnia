@@ -12,6 +12,8 @@ use Zend\Paginator\Paginator;
 use Zend\Crypt\Password\Bcrypt;
 use Zend\Math\Rand;
 
+use Zend\Validator\Date as DataValid;
+
 class ProfilController extends AbstractActionController
 {
     //protected $uzytkownikTable;
@@ -39,6 +41,25 @@ class ProfilController extends AbstractActionController
             $specs = $repository->findAll();
             
             return array('all' => $paginator->getCurrentItems(), 'stronicowanieStrony' => $paginator->getPages('Sliding'), 'specjalnosci' => $specs);
+    }
+    
+    public function mojeSpecjalnosciAction()
+    {
+            $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+
+            $repository = $objectManager->getRepository('Application\Entity\Lekarz');
+            $queryBuilder = $repository->createQueryBuilder('Application\Entity\Lekarz');
+            
+            $queryBuilder->where($queryBuilder->getRootAlias().'.os = '.$this->identity()->id);
+            
+            $query = $queryBuilder->getQuery();
+
+            $paginator = new Paginator(new DoctrinePaginator(new ORMPaginator($query)));
+
+            $paginator->setCurrentPageNumber($this->params()->fromRoute('page', 0));
+
+            
+            return array('all' => $paginator->getCurrentItems(), 'stronicowanieStrony' => $paginator->getPages('Sliding'));
     }
 
     public function dodajAction()
@@ -220,6 +241,51 @@ class ProfilController extends AbstractActionController
             
         } else {
             return $this->redirect()->toRoute('lekarz', array('controller' => 'profil'));
+        }
+        
+        
+       return array('msg' => array(0=>0, 1=>'Błąd.'));  
+    }
+    
+    
+    
+    public function zaznaczUrlopAction()
+    {
+        $get_id = (int)$this->params()->fromRoute('id', 0);   
+        
+        if(!$this->identity() || !($this->identity()->poziom == 1 || $this->identity()->poziom == 2)) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie'));
+        
+        $msg = null;
+
+        $form = new \Lekarz\Form\UrlopForm();
+        
+        $request = $this->getRequest();
+        if (!$request->isPost()) {
+            return array('form' => $form);
+        } else {
+            $form->setData($request->getPost());
+            if ($form->isValid()) {
+                $data = $form->getData();
+                $data_od = $data['data_od_2'].'-'.$data['data_od_1'].'-'.$data['data_od_0'].' '.$data['data_od_3'].':'.$data['data_od_4'];
+                $data_do = $data['data_do_2'].'-'.$data['data_do_1'].'-'.$data['data_do_0'].' '.$data['data_do_3'].':'.$data['data_do_4'];
+                
+                $validator = new DataValid(array('format' => 'Y-m-d H:i'));
+                if($validator->isValid($data_od) && $validator->isValid($data_do) && strtotime($data_od) <= strtotime($data_do)  && strtotime($data_od) >= time()-300){
+                
+                
+                    // Użytkownik o id = 1, jest użytkownikiem systemowym, na którego nie można się zalogować.
+                    \Wizyta\Controller\Rejestracja::zapiszNaWizyte(0, $get_id, false);
+                
+                    return array('msg' => array(0=>1, 1=>'Dodano informację o nieobecności.'));  
+                
+                } else {
+                     return array('msg' => array(0=>0, 1=>'Podany przedział jest nieprawidłowy.'));  
+                }
+                
+                
+                
+            }
+        
         }
         
         
