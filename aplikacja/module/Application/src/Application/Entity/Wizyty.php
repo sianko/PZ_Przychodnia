@@ -38,7 +38,7 @@ class Wizyta
     /**
      * @var \Application\Entity\Lekarz
      *
-     * @ORM\ManyToOne(targetEntity="Application\Entity\Lekarz")
+     * @ORM\ManyToOne(targetEntity="Application\Entity\Lekarz", cascade={"persist"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="lekarz_id", referencedColumnName="id")
      * })
@@ -48,7 +48,7 @@ class Wizyta
     /**
      * @var \Application\Entity\Osoba
      *
-     * @ORM\ManyToOne(targetEntity="Application\Entity\Osoba")
+     * @ORM\ManyToOne(targetEntity="Application\Entity\Osoba", cascade={"persist"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="pacjent_id", referencedColumnName="id")
      * })
@@ -133,6 +133,7 @@ class Wizyta
      */
     public function getLekarz()
     {
+        if($this->lekarz == null) $this->lekarz = new \Application\Entity\Lekarz();
         return $this->lekarz;
     }
 
@@ -156,6 +157,9 @@ class Wizyta
      */
     public function getPacjent()
     {
+        if($this->pacjent == null) $this->pacjent = new \Application\Entity\Osoba();
         return $this->pacjent;
     }
+
+    
 }

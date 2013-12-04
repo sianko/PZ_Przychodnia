@@ -1,0 +1,59 @@
+<?php
+
+ $title = 'Wizyty';
+ $this->headTitle($title);
+ $this->headScript()->appendScript('
+    $(document).ready(function (){
+        $(".tooltip-btn").mouseover(function (e){
+            $(this).tooltip(\'show\');
+        });
+        
+        $(".tooltip-btn").mouseout(function (e){
+            $(this).tooltip(\'hide\');
+        });
+        
+         $(".grafik-open").popover({ html : true});
+        
+        $(".grafik-open").mouseover(function (e){
+            $(this).popover(\'show\');
+        });
+        
+        $(".grafik-open").mouseout(function (e){
+            $(this).popover(\'hide\');
+        });
+    });
+ ');
+ 
+ 
+ ?>
+ <div class="row">
+     <div class="col-md-9">
+        <h1 style="margin-top: 5px;">
+        <?php 
+            echo $this->escapeHtml($title); 
+        ?>    
+        </h1>
+     </div>
+    <div class="col-md-3 text-right">
+        <div class="btn-group text-left" style="margin-top: 5px;">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            Wybierz osobę <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <?php
+               echo '<li><a href="'.($this->url($this->route, array('id'=>0), false, true)).'">Wszystkie</a></li>';
+               
+               foreach($this->osoby as $osoba) { 
+                echo '<li><a href="'.($this->url($this->route, array('oid'=>$osoba->getId()), false, true)).'">'.$this->escapeHtml($osoba->getImie()).' '.$this->escapeHtml($osoba->getNazwisko()). ' [' . $this->escapeHtml($osoba->getPesel()) .']</a></li>';
+               }
+            ?>
+          </ul>
+        </div>
+    </div>
+</div>
+ 
+
+ 
+<?php 
+    echo $this->partial('partial/lista_lekarzy', array('stronicowanieStrony' => $this->stronicowanieStrony, 'all' => $this->all));
+?>
