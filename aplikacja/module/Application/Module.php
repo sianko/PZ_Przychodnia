@@ -26,6 +26,8 @@ class Module
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
         
+        date_default_timezone_set('Europe/Warsaw');
+        
     }
 
     public function getConfig()
@@ -35,13 +37,24 @@ class Module
 
     public function getAutoloaderConfig()
     {   
+        // TWORZENIE TABLICY NAMESPACE NA PODSTAWIE ZAWARTOŚCI /src
+        $tablica_namespace[__NAMESPACE__] = __DIR__ . '/src/' . __NAMESPACE__;
+        $dir = __DIR__ . "/src";
+        if ($dh = opendir($dir)) {
+            
+            while (($file = readdir($dh)) !== false) {
+                if($file !== '.' && $file !== '..'){
+                    $tablica_namespace[$file] = __DIR__ . '/src/' . $file;
+                }
+            }
+            closedir($dh);
+        }
+        
+        
+        
         return array(
             'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                    'Uzytkownik' => __DIR__ . '/src/Uzytkownik',
-                    'Lekarz' => __DIR__ . '/src/Lekarz',
-                ),
+                'namespaces' => $tablica_namespace,
             ),
         );
     }

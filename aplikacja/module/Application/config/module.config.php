@@ -28,6 +28,31 @@ foreach($MY_NAMESPACES_ENTITY as $source)
 /* END Własna konfiguracja */
 
 
+/* Dynamiczne tworzenie invokables 
+    SCHEMAT: 'Uzytkownik\Controller\Logowanie' => 'Uzytkownik\Controller\LogowanieController',
+*/
+    $dir = __DIR__ . "/../src";
+    if ($dh = opendir($dir)) {
+        while (($file = readdir($dh)) !== false) {
+            if($file !== '.' && $file !== '..'){
+               
+               if ($subdir = opendir($dir.'/'.$file.'/Controller/')) {
+                    while (($controllerFile = readdir($subdir)) !== false) {
+                        $substring = substr($controllerFile, 0, -14);
+                        if(!empty($substring)){
+                            $tablica_invokables[$file.'\\Controller\\'. $substring] = $file . '\\Controller\\'. $substring .'Controller';
+                        }
+                    }
+                    closedir($subdir);
+               }
+            }
+        }
+        closedir($dh);
+    }
+/* END Dynamiczne tworzenie */
+
+
+
 return array(
     'router' => array(
         'routes' => array(
@@ -138,6 +163,33 @@ return array(
                         ),
                     ),
             ),
+            'wizyta' => array(
+                'type'    => 'Segment',
+                    'options' => array(
+                        'route'    => '/wizyta[/:controller[/:action[/:id]]][/os/:oid][/t/:category][/sort/:sort/:met][/s:page][/]',
+                        'constraints' => array(
+                                'controller' => '[a-zA-Z]{2}[a-zA-Z0-9_\-]*',
+                                'action'     => '[a-zA-Z]{2}[a-zA-Z0-9_\-]*',
+                                'id'     => '[0-9]*',
+                                'page'     => '[0-9]*',
+                                'category' => '[0-9]*',
+                                'oid' => '[0-9]*',
+                                'sort' => '[a-zA-Z]*',
+                                'met' => '[a-zA-Z]*'
+                            ),
+                        'defaults' => array(
+                            '__NAMESPACE__' => 'Wizyta\Controller',
+                            'controller'    => 'Index',
+                            'action'        => 'index',
+                            'id' => 0,
+                            'page' => 1,
+                            'category' => 0,
+                            'oid' => 0,
+                            'sort' => 'data',
+                            'met' => 'desc'
+                        ),
+                    ),
+            ),
             
         ),
         
@@ -172,14 +224,7 @@ return array(
         ),
     ),
     'controllers' => array(
-        'invokables' => array(
-            'Application\Controller\Index' => 'Application\Controller\IndexController',
-            'Application\Controller\Kontakt' => 'Application\Controller\KontaktController',
-            'Uzytkownik\Controller\Index' => 'Uzytkownik\Controller\IndexController',
-            'Uzytkownik\Controller\Logowanie' => 'Uzytkownik\Controller\LogowanieController',
-            'Uzytkownik\Controller\Profil' => 'Uzytkownik\Controller\ProfilController',
-            'Lekarz\Controller\Profil' => 'Lekarz\Controller\ProfilController',
-        ),
+        'invokables' => $tablica_invokables,
     ),
     'view_manager' => array(
         'display_not_found_reason' => true,
@@ -210,36 +255,6 @@ return array(
     
     // Doctrine config
     'doctrine' => array(
-        'driver' => $array_injected_into_doctrine /*array(
-            __NAMESPACE__ . '_entities' => array(
-                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-                'cache' => 'array',
-                'paths' => array(__DIR__ . '/../src/'. __NAMESPACE__ . '/Entity')
-            ),
-            'orm_default' => array(
-                'drivers' => array(
-                    __NAMESPACE__ . '\Entity' => __NAMESPACE__ . '_entities'
-                )
-            ),
-            'Uzytkownik' . '_entities' => array(
-                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-                'cache' => 'array',
-                'paths' => array(__DIR__ . '/../src/'. 'Uzytkownik' . '/Entity')
-            ),
-            'Application' . '_entities' => array(
-                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-                'cache' => 'array',
-                'paths' => array(__DIR__ . '/../src/'. 'Application' . '/Entity')
-            ),
-            'orm_default' => array(
-                'drivers' => array(
-                    'Uzytkownik' . '\Entity' => 'Uzytkownik' . '_entities',
-                    'Application' . '\Entity' => 'Application' . '_entities'
-                )
-            ),
-           
-            
-            
-        ) */
+        'driver' => $array_injected_into_doctrine
     )
 );

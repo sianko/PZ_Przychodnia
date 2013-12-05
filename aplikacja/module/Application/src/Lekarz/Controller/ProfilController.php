@@ -16,7 +16,7 @@ use Zend\Validator\Date as DataValid;
 
 class ProfilController extends AbstractActionController
 {
-    //protected $uzytkownikTable;
+
     
     public function indexAction()
     {

@@ -11,7 +11,7 @@ use Zend\Paginator\Paginator;
 
 use Zend\Validator\Date as DataValid;
 
-class ProfilController extends AbstractActionController
+class IndexController extends AbstractActionController
 {
     
     public function indexAction()
@@ -28,6 +28,11 @@ class ProfilController extends AbstractActionController
                 $queryBuilder->where($queryBuilder->getRootAlias().'data >= '.date('Y-m-d H:i'));
             } else if($get_category == 2){ // tylko przeszłe
                 $queryBuilder->where($queryBuilder->getRootAlias().'data < '.date('Y-m-d H:i'));
+            }
+            
+            $get_oid = (int)$this->params()->fromRoute('oid', 0);
+            if($get_oid > 0){
+                $queryBuilder->andWhere($queryBuilder->getRootAlias().'.pacjent = '.$get_oid);
             }
             
             $get_sort = $this->params()->fromRoute('sort', 'data');
@@ -51,9 +56,9 @@ class ProfilController extends AbstractActionController
             $repository = $objectManager->getRepository('Application\Entity\Osoba');
             $osoby = $repository->findAll();
             
+            
             return array('all' => $paginator->getCurrentItems(), 'stronicowanieStrony' => $paginator->getPages('Sliding'), 'osoby' => $osoby);
     }
-    
     
     
 }

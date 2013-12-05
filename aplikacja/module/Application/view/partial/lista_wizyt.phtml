@@ -1,0 +1,29 @@
+<?php if($this->stronicowanieStrony->currentItemCount > 0) { ?>
+ 
+  
+   <?php 
+    $lp = 1; 
+    foreach($this->all as $entityObject) :
+   ?>
+
+    <div class="panel panel-default">
+        
+        <?php
+            echo $this->escapeHtml($entityObject->getId()).' | '.$this->escapeHtml($entityObject->getData()->format('d.m.Y H:i')).' - '.$this->escapeHtml($entityObject->getDataKoniec()->format('d.m.Y H:i')).' | '.$this->escapeHtml($entityObject->getPacjent()->getPesel()).' | '.$this->escapeHtml($entityObject->getLekarz()->getLid());
+        ?>
+        
+    </div>
+    
+   <?php
+    endforeach; echo date('H:i');
+   ?>
+   
+<?php echo $this->partial('partial/paginacja_part', array(
+    'stronicowanieStrony' => $this->stronicowanieStrony)); ?>
+ 
+
+<?php 
+    } else { 
+        echo '<div class="alert alert-warning">Brak danych do wyświetlenia.</div>';
+    } 
+?>

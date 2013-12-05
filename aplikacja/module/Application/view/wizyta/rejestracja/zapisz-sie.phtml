@@ -1,0 +1,53 @@
+<?php
+
+ $title = 'Rejestracja na wizytę';
+ $this->headTitle($title);
+ $this->headScript()->appendScript('
+    $(document).ready(function (){
+        $(".tooltip-btn").mouseover(function (e){
+            $(this).tooltip(\'show\');
+        });
+        
+        $(".tooltip-btn").mouseout(function (e){
+            $(this).tooltip(\'hide\');
+        });
+        
+         $(".grafik-open").popover({ html : true});
+        
+        $(".grafik-open").mouseover(function (e){
+            $(this).popover(\'show\');
+        });
+        
+        $(".grafik-open").mouseout(function (e){
+            $(this).popover(\'hide\');
+        });
+    });
+ ');
+ 
+ 
+ ?>
+ <div class="row">
+     <div class="col-md-9">
+        <h1 style="margin-top: 5px;">
+        <?php 
+            echo $this->escapeHtml($title); 
+        ?>    
+        </h1>
+     </div>
+    <div class="col-md-3 text-right">
+       <?php echo $this->escapeHtml('coś');  ?>
+    </div>
+</div>
+
+<?php
+    if($msg === null){
+    
+    
+    } else if($msg[0] == 1){
+        echo '<div class="alert alert-success">'.$msg[1].'</div>';
+    } else {
+        echo '<div class="alert alert-danger">'.$msg[1].'</div>';
+    }
+
+?>
+ 

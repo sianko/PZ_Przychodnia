@@ -29,9 +29,16 @@ class Wizyta
     private $data;
 
     /**
-     * @var boolean
+     * @var \DateTime
      *
-     * @ORM\Column(name="status", type="boolean", nullable=false)
+     * @ORM\Column(name="data_koniec", type="datetime", nullable=false)
+     */
+    private $dataKoniec;    
+    
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="status", type="integer", nullable=false)
      */
     private $status = '0';
 
@@ -89,6 +96,29 @@ class Wizyta
     {
         return $this->data;
     }
+    
+    /**
+     * Set data_koniec
+     *
+     * @param \DateTime $data
+     * @return Wizyta
+     */
+    public function setDataKoniec($data)
+    {
+        $this->dataKoniec = $data;
+
+        return $this;
+    }
+
+    /**
+     * Get data_koniec
+     *
+     * @return \DateTime 
+     */
+    public function getDataKoniec()
+    {
+        return $this->dataKoniec;
+    }    
 
     /**
      * Set status
