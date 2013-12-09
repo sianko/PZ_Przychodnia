@@ -19,7 +19,8 @@ class RejestracjaController extends AbstractActionController
     {
          $msg= null;
          
-         $r = self::zapiszNaWizyte($this, date("Y-m-d H:i:s"), 1, 6, true, true, 60*24*3, true);
+         //$r = self::zapiszNaWizyte($this, '2013-12-10 17:00:00', 1, 6, true, true, null, true);
+         $r = self::zapiszNaWizyte($this, '2013-12-10 10:00:00', 1, 3, true, true, 60*8);
          
          if($r === true){
             $msg[0] = 1;
@@ -96,9 +97,9 @@ class RejestracjaController extends AbstractActionController
             $wizyta->setPacjent($pacjent);
             $wizyta->setData($data);
             if($czasTrwania === null){
-                $dataKonca = $data->getTimestamp() + $dr->getMinutNaPacjenta()*60;
+                $dataKonca = $data->format('U') + $dr->getMinutNaPacjenta()*60;
             } else {
-                $dataKonca = $data->getTimestamp() + $czasTrwania*60;
+                $dataKonca = $data->format('U') + $czasTrwania*60;
             }
             
             $dataKonca = new \DateTime(date('Y-m-d H:i:s',$dataKonca));
@@ -124,11 +125,7 @@ class RejestracjaController extends AbstractActionController
                     $tmpOstatniaData += 86400;
                 }
                 
-                
-                
                 foreach($przedzialyCzasowe as $przedzial){
-                
-                    
                     $wizyta2 = new DB\Wizyta();
                     $wizyta2->setLekarz($dr);
                     $wizyta2->setPacjent($pacjent);
@@ -139,7 +136,7 @@ class RejestracjaController extends AbstractActionController
                 unset($przedzialyCzasowe);
                 
             } else {
-                $wizyta->setDataKoniec(new \DateTime(date('Y-m-d H:i:s',$dataKonca)));
+                $wizyta->setDataKoniec(new \DateTime($dataKonca->format('Y-m-d H:i:s')));
                 $objectManager->persist($wizyta);
             }
         }
@@ -160,34 +157,7 @@ class RejestracjaController extends AbstractActionController
     }
     
     
-    public function wolneTerminy($lekarz, $miesiac, $rok)
-    {
-        $miesiac = intval($miesiac);
-        $rok = intval($rok);
-        
-        $podanaData = new \DateTime($rok.'-'.$miesiac.'-01');
-        
-        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        $queryBuider = $objectManager->createQueryBuilder('\Application\Entity\Wizyta');
-        $queryBuider->where($queryBuider->getRootAlias().'lekarz = '. $lekarz);
-        $queryBuider->andWhere($queryBuider->getRootAlias().'data >= \''. $rok .'-'.$miesiac.'-01 00:00:00\'');
-        $queryBuider->andWhere($queryBuider->getRootAlias().'data <= \''. $rok .'-'.$miesiac.'-31 23:59:59\'');
-        $query = $queryBuider->getQuery();
-        $wynik = $query->execute();
-        
-       /* foreach($wynik as $w){
-            $wizyty[$w->getData()->format('Ymd')] = ;
-        }
-        
-        
-        
-        $grafik = $lekarz->getGrafikArray();
-        
-        for($nrDnia = 1; $nrDnia <= $podanaData->format('t'); $nrDnia++){
-                $kalendarz[$nrDnia] = ;
-        }
-        */
-    }
+    
     
     
     

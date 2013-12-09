@@ -8,7 +8,7 @@ use Application\Entity as DB;
 use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator;
 use Doctrine\ORM\Tools\Pagination\Paginator as ORMPaginator;
 use Zend\Paginator\Paginator;
-
+use Wizyta\Model\Narzedzia as Narzedzia;
 use Zend\Validator\Date as DataValid;
 
 class IndexController extends AbstractActionController
@@ -58,6 +58,13 @@ class IndexController extends AbstractActionController
             
             
             return array('all' => $paginator->getCurrentItems(), 'stronicowanieStrony' => $paginator->getPages('Sliding'), 'osoby' => $osoby);
+    }
+    
+    public function wolneTerminyAction(){
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $dr = $objectManager->find('Application\Entity\Lekarz', 3);
+        
+        return array('terminy' => Narzedzia::wolneTerminy($this, $dr, 12, 2013));
     }
     
     

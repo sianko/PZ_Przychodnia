@@ -136,7 +136,7 @@ class Lekarz implements OsobaInterface
         
         foreach($dni as $d)
         {
-            $wynik[] = explode(';', $d);
+            $wynik[] = empty($d) ? array() : explode(';', $d);
         }
         
         return $wynik;

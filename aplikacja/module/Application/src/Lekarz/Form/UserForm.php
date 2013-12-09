@@ -181,7 +181,7 @@ class UserForm extends Form
                 'attributes' => array(
                     'type'  => 'text',
                     'class' => 'form-control',
-                    'placeholder'=>'np. 8.00-14.00;15.30-16.00',
+                    'placeholder'=>'np. 8:00-14:00;15:30-16:00',
                 ),
             ));  
         }

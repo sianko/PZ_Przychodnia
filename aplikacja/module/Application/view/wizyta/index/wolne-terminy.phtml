@@ -1,0 +1,59 @@
+<?php
+
+ $title = 'Wolne terminy';
+ $this->headTitle($title);
+ $this->headScript()->appendScript('
+    $(document).ready(function (){
+        $(".tooltip-btn").mouseover(function (e){
+            $(this).tooltip(\'show\');
+        });
+        
+        $(".tooltip-btn").mouseout(function (e){
+            $(this).tooltip(\'hide\');
+        });
+        
+         $(".grafik-open").popover({ html : true});
+        
+        $(".grafik-open").mouseover(function (e){
+            $(this).popover(\'show\');
+        });
+        
+        $(".grafik-open").mouseout(function (e){
+            $(this).popover(\'hide\');
+        });
+    });
+ ');
+ 
+ 
+ ?>
+ <div class="row">
+     <div class="col-md-9">
+        <h1 style="margin-top: 5px;">
+        <?php 
+            echo $this->escapeHtml($title); 
+        ?>    
+        </h1>
+     </div>
+    <div class="col-md-3 text-right">
+        <div class="btn-group text-left" style="margin-top: 5px;">
+          
+        </div>
+    </div>
+</div>
+ 
+
+ 
+<?php 
+    //print_r($this->terminy); echo '<br />';
+    foreach($this->terminy as $k => $d){
+       if(is_array($d)){
+           foreach($d as $dzien){
+                echo '<div class="alert alert-info"><span class="btn btn-success">'.$dzien[0]->format('j.m').'</span> '.$dzien[0]->format('H:i:s').' - '.$dzien[1]->format('H:i:s').'</div>';
+            }
+       }
+       /*echo $k.'=> ';
+        print_r($dzien); echo '<br />';*/
+    
+    }
+    
+?>
