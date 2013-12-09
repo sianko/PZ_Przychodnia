@@ -29,6 +29,7 @@
          echo '</tr><tr><td>Do</td>';
          for($i=0; $i<=4; $i++) echo '<td>'.$this->formRow($form->get('data_do_'.$i)).'</td>';
          echo '</tr></table>';
+          echo '<p class="text-left">'.$this->formRow($form->get('powiadom')).' Powiadom zarejestrowanych pacjentów o odwołaniu wizyt.</p>';
          echo '<p class="text-center">'.$this->formSubmit($form->get('submit')).'</p>';
          echo '</div>';
          echo $this->form()->closeTag($form);

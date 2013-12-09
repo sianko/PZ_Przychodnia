@@ -268,13 +268,27 @@ class ProfilController extends AbstractActionController
                 $data = $form->getData();
                 $data_od = $data['data_od_2'].'-'.$data['data_od_1'].'-'.$data['data_od_0'].' '.$data['data_od_3'].':'.$data['data_od_4'];
                 $data_do = $data['data_do_2'].'-'.$data['data_do_1'].'-'.$data['data_do_0'].' '.$data['data_do_3'].':'.$data['data_do_4'];
+                $powiadomienie = isset($data['powiadom']) && $data['powiadom'] === 'tak' ? true : false;
                 
                 $validator = new DataValid(array('format' => 'Y-m-d H:i'));
                 if($validator->isValid($data_od) && $validator->isValid($data_do) && strtotime($data_od) <= strtotime($data_do)  && strtotime($data_od) >= time()-300){
                 
-                
+                    $roznicaCzasu = strtotime($data_do) - strtotime($data_od);  
+                    $roznicaCzasu /= 60;
+                    
+                    $pobranyLekarz = null;
+                    if($this->identity()->poziom == 2){
+                        
+                        if($get_id > 0){
+                           $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+                           $pobranyLekarz = $objectManager->find('Application\Entity\Osoba', $get_id);
+                        }
+                    }
+                    
+                    \Wizyta\Model\Narzedzia::odwolajWizyte($this, array($data_od, $data_do), $powiadomienie, $pobranyLekarz);
+                    
                     // Użytkownik o id = 1, jest użytkownikiem systemowym, na którego nie można się zalogować.
-                    \Wizyta\Controller\Rejestracja::zapiszNaWizyte(0, $get_id, false);
+                    \Wizyta\Controller\Rejestracja::zapiszNaWizyte($this, $data_od, 1, $this->identity()->id, false, false, $roznicaCzasu, true);
                 
                     return array('msg' => array(0=>1, 1=>'Dodano informację o nieobecności.'));  
                 

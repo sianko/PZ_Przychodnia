@@ -59,7 +59,16 @@ class Narzedzia
         return true;
     }
     
-    
+    /**
+     *  Zwraca tablicę terminów z danego miesiąca, które można zarezerwować.
+     *  
+     *  @param $context = $this
+     *  @param Application\Entity\Lekarz $lekarz
+     *  @param int $miesiac
+     *  @param int $rok
+     *
+     *  @return array of \DateTime - postaci: tablica[int: dzień miesiąca][int: przedziały wolnych godzin][0:godzina początkowa | 1: godzina końcowa]
+     */
     
     public static function wolneTerminy($context, $lekarz, $miesiac, $rok)
     {
@@ -194,6 +203,97 @@ class Narzedzia
        
     }
     
+    /**
+     *  Odwoływanie wizyty. Ustawienia na podstawie $this->identity()->poziom
+     *  
+     *  @param $context = $this
+     *  @param int|array id wizyty albo array(data rozpoczęcia, data zakończenia) - wizyty z zakresu
+     *  @param bool $powiadomienie - warunkuje wysłanie powiadomień o odwołaniu wizyty
+     *  
+     *  @return bool
+     */
+    
+    public function odwolajWizyte($context, $cel, $powiadomienie = true, $odwoluje = null){
+        
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $repository = $objectManager->getRepository('Application\Entity\Lekarz');
+        
+        if($odwoluje === null){
+            
+            if($this->identity()->poziom == 1){
+                $nowyStatusWizyty = 2;
+                $queryBuilder = $repository->createQueryBuilder('Application\Entity\Lekarz');
+                $alias = $queryBuilder->getRootAlias();
+                $queryBuilder->where($alias.'.os = '. $this->identity()->id);
+                $query = $queryBuilder->getQuery();
+                $wynik = $query->execute();
+                
+                foreach($wynik as $l){
+                    $tablicaWarunkow[] = $l->getLid();
+                }
+                
+            } else {
+                $nowyStatusWizyty = 1;
+                $tablicaWarunkow[0] = $this->identity()->getId();
+            }
+            
+        } else if($this->identity()->poziom == 2) {
+            $os = $odwoluje;
+            $nowyStatusWizyty = intval($os->getPoziom())+1;
+            
+            if($nowyStatusWizyty === 2){
+                $queryBuilder = $repository->createQueryBuilder('Application\Entity\Lekarz');
+                $alias = $queryBuilder->getRootAlias();
+                $queryBuilder->where($alias.'.os = '. $os->getId());
+                $query = $queryBuilder->getQuery();
+                $wynik = $query->execute();
+                
+                foreach($wynik as $l){
+                    $tablicaWarunkow[] = $l->getLid();
+                }
+            }
+            else {
+                $tablicaWarunkow[0] = $os->getId();
+            }
+        } else {
+            throw new \Exception('Nie masz uprawnień do tej operacji.');
+            return false;
+            }
+        
+       
+        $repo = $objectManager->getRepository('\Application\Entity\Wizyta');
+        $queryBuilder = $repo->createQueryBuilder('\Application\Entity\Wizyta');
+        $alias = $queryBuilder->getRootAlias();
+        
+        $queryBuilder->set($alias.'.status', $nowyStatusWizyty);
+        if(is_array($cel)){
+            $queryBuilder->where($alias.'.data >= '.date('Y-m-d H:i:s', strtotime($cel[0])));
+            $queryBuilder->andWhere($alias.'.data_koniec <= '.date('Y-m-d H:i:s', strtotime($cel[1])));
+            
+            
+            if($nowyStatusWizyty === 2){
+            $queryBuilder->join($alias.'.lekarz', 'z');
+            } else {
+                $queryBuilder->join($alias.'.pacjent', 'z');
+            }
+            
+            if(isset($tablicaWarunkow)){
+                $warunek = implode(' OR '.$alias.'.'.($nowyStatusWizyty === 2 ? 'lekarz' : 'pacjent').' = ', $tablicaWarunkow);
+                $queryBuilder->andWhere($alias.'.'.($nowyStatusWizyty === 2 ? 'lekarz' : 'pacjent').' = '.$warunek);
+            }
+            
+            
+        } else {
+            $queryBuilder->where($alias.'.id = '.intval($cel));
+        }
+        
+        
+        
+        $query = $queryBuilder->getQuery();
+        $query->execute();
+        
+        return true;
+    }
     
     
 }

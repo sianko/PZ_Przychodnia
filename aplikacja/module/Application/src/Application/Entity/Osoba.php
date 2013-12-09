@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="osoby", uniqueConstraints={@ORM\UniqueConstraint(name="pesel", columns={"pesel"})})
  * @ORM\Entity
  */
-class Osoba
+class Osoba implements OsobaInterface
 {
     /**
      * @var integer

@@ -168,7 +168,15 @@ class UrlopForm extends Form
                 'style' => 'width: 75px;',
                 'value' => date("i")
             )
-        ));            
+        ));                  
+        
+        $this->add(array(
+            'name' => 'powiadom',
+			'type' => 'Zend\Form\Element\Checkbox',
+            'attributes' => array(
+                'value' => 'tak'
+            )
+        ));          
 		
         $this->add(array(
             'name' => 'submit',
