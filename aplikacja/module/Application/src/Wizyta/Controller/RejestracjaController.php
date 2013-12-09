@@ -19,7 +19,7 @@ class RejestracjaController extends AbstractActionController
     {
          $msg= null;
          
-         $r = self::zapiszNaWizyte($this, date("Y-m-d H:i:s"), 1, 6, null,true);
+         $r = self::zapiszNaWizyte($this, date("Y-m-d H:i:s"), 1, 6, true, true, 60*24*3, true);
          
          if($r === true){
             $msg[0] = 1;
@@ -38,13 +38,15 @@ class RejestracjaController extends AbstractActionController
      *  @param string|\DateTime $data
      *  @param int|Application\Entity\Osoba $pacjent
      *  @param int|Application\Entity\Lekarz $lekarz
+     *  @param bool $powiadomPacjenta
+     *  @param bool $powiadomLekarza
      *  @param bool $danaOsoba    określa, czy $lekarz wskazuje na obiekt Lekarz (false), czy Osoba (true)
      *  @param int $czasTrwania   pozwala określić nietypowy czas trwania [w minutach] wizyt(y)
      *
      *  @return bool|string
      */
     
-    public static function zapiszNaWizyte($context, $data, $pacjent, $lekarz, $czasTrwania = null, $danaOsoba = false)
+    public static function zapiszNaWizyte($context, $data, $pacjent, $lekarz, $powiadomPacjenta = true, $powiadomLekarza = true, $czasTrwania = null, $danaOsoba = false)
     {
        // Set & Valid $data
         if(!($data instanceof \DateTime)){
@@ -98,54 +100,95 @@ class RejestracjaController extends AbstractActionController
             } else {
                 $dataKonca = $data->getTimestamp() + $czasTrwania*60;
             }
-            $wizyta->setDataKoniec(new \DateTime(date('Y-m-d H:i:s',$dataKonca)));
-            $objectManager->persist($wizyta);
+            
+            $dataKonca = new \DateTime(date('Y-m-d H:i:s',$dataKonca));
+            
+            if($dataKonca->format('Y-m-d') !== $data->format('Y-m-d')){
+                
+                $przedzialyCzasowe[0][0] = $data->format('Y-m-d H:i:s');
+                $przedzialyCzasowe[0][1] = $data->format('Y-m-d').' 23:59:59';
+                $przedzialyCzasowe[1][0] = $dataKonca->format('Y-m-d').' 00:00:00';  
+                $przedzialyCzasowe[1][1] = $dataKonca->format('Y-m-d H:i:s');
+              
+                $tmpData1 = new \DateTime($przedzialyCzasowe[0][1]);
+                $tmpData2 = new \DateTime($przedzialyCzasowe[1][0]);
+                
+                $liczbaDni = floor((((int)$tmpData2->format('U')) - ((int)$tmpData1->format('U')) - 1)/86400); 
+                $tmpOstatniaData = (int)$tmpData1->format('U');
+                for($k = 0; $k < $liczbaDni; $k++){
+                    $d = new \DateTime(date('Y-m-d H:i:s', $tmpOstatniaData + 2));
+                    $przedzialyCzasowe[] = array(
+                                                0 => $d->format('Y-m-d').' 00:00:00',
+                                                1 => $d->format('Y-m-d').' 23:59:59'
+                                                );
+                    $tmpOstatniaData += 86400;
+                }
+                
+                
+                
+                foreach($przedzialyCzasowe as $przedzial){
+                
+                    
+                    $wizyta2 = new DB\Wizyta();
+                    $wizyta2->setLekarz($dr);
+                    $wizyta2->setPacjent($pacjent);
+                    $wizyta2->setData(new \DateTime($przedzial[0]));
+                    $wizyta2->setDataKoniec(new \DateTime($przedzial[1]));
+                    $objectManager->persist($wizyta2);
+                }
+                unset($przedzialyCzasowe);
+                
+            } else {
+                $wizyta->setDataKoniec(new \DateTime(date('Y-m-d H:i:s',$dataKonca)));
+                $objectManager->persist($wizyta);
+            }
         }
+        
+        if($powiadomPacjenta) $podwiadomLista[] = $pacjent;
+        
+        if($powiadomLekarza) $powiadomLista[] = $lekarzArray[0]->getOs();
+        
+        if(isset($powiadomLista)){
+            \Wizyta\Model\Narzedzia::powiadom($podwiadomLista, 'Zrejestrowano wizytę na dzień <b>'.$data->format('d.m.Y').'</b> na godzinę <b>'.$data->format('H:i').'</b>.');
+        }
+        
+        
         
         $objectManager->flush();
         
         return true;
     }
     
-    /**
-     *  Powiadamiane via mail
-     *  @param array(Entity\Osoba) $adresaci
-     *  @param string $wiadomosc
-     */
-    private function powiadom($adresaci, $wiadomosc = null, $temat = null){
-        foreach($adresaci as $osoba)
-        {
-            $emails[] = $osoba->getEmail();
+    
+    public function wolneTerminy($lekarz, $miesiac, $rok)
+    {
+        $miesiac = intval($miesiac);
+        $rok = intval($rok);
+        
+        $podanaData = new \DateTime($rok.'-'.$miesiac.'-01');
+        
+        $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        $queryBuider = $objectManager->createQueryBuilder('\Application\Entity\Wizyta');
+        $queryBuider->where($queryBuider->getRootAlias().'lekarz = '. $lekarz);
+        $queryBuider->andWhere($queryBuider->getRootAlias().'data >= \''. $rok .'-'.$miesiac.'-01 00:00:00\'');
+        $queryBuider->andWhere($queryBuider->getRootAlias().'data <= \''. $rok .'-'.$miesiac.'-31 23:59:59\'');
+        $query = $queryBuider->getQuery();
+        $wynik = $query->execute();
+        
+       /* foreach($wynik as $w){
+            $wizyty[$w->getData()->format('Ymd')] = ;
         }
         
-        $recipents = implode(', ', $emails);
         
-        if($wiadomosc === null){
-            $message = '
-                <p style="background: #00A3D9; color: #fff;">Wirtualna Przychodnia</p>
-                <div>
-                
-                </div>
-                <p style="background: #00A3D9; color: #fff;">Wirtualna Przychodnia<br />tel. 452 456 842<br />fax. 484 125 458<br />www: wp.med.pl</p>
-                ';
-        } else {
-            $message = $wiadomosc;
-        }
         
-        if($temat === null){
-            $subject = 'Informacja z Wirtualnej Przychodni';
-        } else {
-            $subject = $temat;
+        $grafik = $lekarz->getGrafikArray();
+        
+        for($nrDnia = 1; $nrDnia <= $podanaData->format('t'); $nrDnia++){
+                $kalendarz[$nrDnia] = ;
         }
-
-
-        $headers  = 'MIME-Version: 1.0' . "\r\n";
-        $headers .= 'Content-type: text/html; charset=iso-8859-2' . "\r\n";
-        $headers .= 'From: Wirtualna Przychodnia <wirtualna-przychodnia@example.com>' . "\r\n";
-        $headers .= 'Bcc: ' . $recipents . "\r\n";
-
-        mail('', $subject, $message, $headers);
+        */
     }
+    
     
     
 }
