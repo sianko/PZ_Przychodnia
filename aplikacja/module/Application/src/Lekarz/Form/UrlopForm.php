@@ -28,12 +28,12 @@ class UrlopForm extends Form
             $rok[$i] = $i;
         }
         
-        for($i=1; $i<=59; $i++)
+        for($i=0; $i<=59; $i++)
         {
             $min[$i] = $i < 10 ? '0'.$i : $i;
         }
         
-        for($i=1; $i<=24; $i++)
+        for($i=0; $i<=23; $i++)
         {
             $godz[$i] = $i;
         }
