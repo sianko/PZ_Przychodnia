@@ -23,7 +23,7 @@ class ProfilController extends AbstractActionController
             $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
             $repository = $objectManager->getRepository('Application\Entity\Lekarz');
-            $queryBuilder = $repository->createQueryBuilder('Application\Entity\Lekarz');
+            $queryBuilder = $repository->createQueryBuilder('dr');
             
             $get_category = (int)$this->params()->fromRoute('category', 0);
             if($get_category > 0){
@@ -48,7 +48,7 @@ class ProfilController extends AbstractActionController
             $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
             $repository = $objectManager->getRepository('Application\Entity\Lekarz');
-            $queryBuilder = $repository->createQueryBuilder('Application\Entity\Lekarz');
+            $queryBuilder = $repository->createQueryBuilder('dr');
             
             $queryBuilder->where($queryBuilder->getRootAlias().'.os = '.$this->identity()->id);
             
@@ -266,11 +266,17 @@ class ProfilController extends AbstractActionController
             $form->setData($request->getPost());
             if ($form->isValid()) {
                 $data = $form->getData();
+                
+                // zera wiodące [minuty]
+                $data['data_od_4'] = $data['data_od_4'] < 10 ? '0'.$data['data_od_4'] : $data['data_od_4'];
+                $data['data_do_4'] = $data['data_do_4'] < 10 ? '0'.$data['data_do_4'] : $data['data_do_4'];
+                
                 $data_od = $data['data_od_2'].'-'.$data['data_od_1'].'-'.$data['data_od_0'].' '.$data['data_od_3'].':'.$data['data_od_4'];
                 $data_do = $data['data_do_2'].'-'.$data['data_do_1'].'-'.$data['data_do_0'].' '.$data['data_do_3'].':'.$data['data_do_4'];
+                
                 $powiadomienie = isset($data['powiadom']) && $data['powiadom'] === 'tak' ? true : false;
                 
-                $validator = new DataValid(array('format' => 'Y-m-d H:i'));
+                $validator = new DataValid(array('format' => 'Y-n-j G:i'));
                 if($validator->isValid($data_od) && $validator->isValid($data_do) && strtotime($data_od) <= strtotime($data_do)  && strtotime($data_od) >= time()-300){
                 
                     $roznicaCzasu = strtotime($data_do) - strtotime($data_od);  
@@ -287,8 +293,8 @@ class ProfilController extends AbstractActionController
                     
                     \Wizyta\Model\Narzedzia::odwolajWizyte($this, array($data_od, $data_do), $powiadomienie, $pobranyLekarz);
                     
-                    // Użytkownik o id = 1, jest użytkownikiem systemowym, na którego nie można się zalogować.
-                    \Wizyta\Controller\Rejestracja::zapiszNaWizyte($this, $data_od, 1, $this->identity()->id, false, false, $roznicaCzasu, true);
+                    // Użytkownik o id = 1, jest użytkownikiem "systemowym", na którego nie można się zalogować.
+                    \Wizyta\Controller\RejestracjaController::zapiszNaWizyte($this, $data_od, 1, $this->identity()->id, false, false, $roznicaCzasu, true);
                 
                     return array('msg' => array(0=>1, 1=>'Dodano informację o nieobecności.'));  
                 

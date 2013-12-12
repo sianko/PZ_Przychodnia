@@ -12,6 +12,9 @@
             if($entityObject->getStatus() == 0){
                 $statAlertCSS = 'success';
                 $statPrzezKogo = '';
+                
+                if($entityObject->getPacjent()->getId() == 1) $statAlertCSS = 'info';
+                
             } else if($entityObject->getStatus() == 1){
                 $statAlertCSS = 'danger';
                 $statPrzezKogo = '<small><i>odwołana przez pacjenta</i></small>';
@@ -53,8 +56,15 @@
               </a> ';
             }
             
+            if($entityObject->getPacjent()->getId() != 1){
+                echo ' <h3><small>Pacjent:</small> '.$this->escapeHtml($entityObject->getPacjent()->getImie()).' '.$this->escapeHtml($entityObject->getPacjent()->getNazwisko());
+            } else {
+                echo ' <h3>URLOP';
+            }
             
-            echo ' <h3><small>Pacjent:</small> '.$this->escapeHtml($entityObject->getPacjent()->getImie()).' '.$this->escapeHtml($entityObject->getPacjent()->getNazwisko()).' <span style="margin-left: 35px"><small>Lekarz:</small> '.$this->escapeHtml($entityObject->getLekarz()->getTytulNaukowy().' '.$entityObject->getLekarz()->getImie()).' '.$this->escapeHtml($entityObject->getLekarz()->getNazwisko()).'</span></h3>';
+            echo ' <span style="margin-left: 35px"><small>Lekarz:</small> '.$this->escapeHtml($entityObject->getLekarz()->getTytulNaukowy().' '.$entityObject->getLekarz()->getImie()).' '.$this->escapeHtml($entityObject->getLekarz()->getNazwisko()).'</span></h3>';
+            
+            
         ?>
         
     </div>

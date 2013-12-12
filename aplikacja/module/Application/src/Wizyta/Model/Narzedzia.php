@@ -262,44 +262,54 @@ class Narzedzia
             
         unset($alias);
        
-        //$repo = $objectManager->getRepository('\Application\Entity\Wizyta');
-        $queryBuilder1 = $objectManager->createQueryBuilder('\Application\Entity\Wizyta');
-        /*$alias = $queryBuilder1->getRootAliases();
-        print_r($alias);
-        $alias = $alias[0];*/
+        $repo = $objectManager->getRepository('\Application\Entity\Wizyta');
+        $queryBuilder1 = $repo->createQueryBuilder('wz');
+
         
-        if(isset($alias)){
-            $alias .= '.';
-        } else {
-            //$alias = '\Application\Entity\Wizyta.';
-            $alias = '';
-        }
-        $queryBuilder1->update('\Application\Entity\Wizyta');
-        $queryBuilder1->set($alias.'status', $nowyStatusWizyty);
+        $alias = $queryBuilder1->getRootAlias().'.';
+        
         if(is_array($cel)){
             $queryBuilder1->where($alias.'data >= \''.date('Y-m-d H:i:s', strtotime($cel[0])).'\'');
-            $queryBuilder1->andWhere($alias.'data_koniec <= \''.date('Y-m-d H:i:s', strtotime($cel[1])).'\'');
+            $queryBuilder1->andWhere($alias.'dataKoniec <= \''.date('Y-m-d H:i:s', strtotime($cel[1])).'\'');
+
             
-           /* if($nowyStatusWizyty === 2){
-            $queryBuilder1->join($alias.'lekarz', 'z');
-            } else {
-                $queryBuilder1->join($alias.'pacjent', 'z');
-            }
-            */
-            /*if(isset($tablicaWarunkow)){
+            if(isset($tablicaWarunkow)){
                 $warunek = implode(' OR '.$alias.''.($nowyStatusWizyty === 2 ? 'lekarz' : 'pacjent').' = ', $tablicaWarunkow);
                 $queryBuilder1->andWhere($alias.''.($nowyStatusWizyty === 2 ? 'lekarz' : 'pacjent').' = '.$warunek);
             }
-            */
+            
             
         } else {
             $queryBuilder1->where($alias.'id = '.intval($cel));
         }
         
+        $queryBuilder1->andWhere($alias.'status = 0');
         
-        echo 'SQL: '.$queryBuilder1->getDql();
+        //echo 'SQL: '.$queryBuilder1->getDql();
         $query = $queryBuilder1->getQuery();
-        $query->execute();
+        $pobrane = $query->execute();
+ 
+        $listaMailingowa = array();
+        $listaWizytOdwolanych = array();
+        
+        foreach($pobrane as $rekord){
+            $rekord->setStatus($nowyStatusWizyty);
+            $objectManager->persist($rekord);
+            
+            if($powiadomienie && $nowyStatusWizyty == 2){
+                $listaMailingowa[] = $rekord()->getPacjent();
+            } else if($powiadomienie) {
+                $listaMailingowa[] = $rekord()->getLekarz();
+            }
+            
+            $listaWizytOdwolanych[] = $rekord->getData()->format('d.m.Y H:i').' - '.$rekord->getDataKoniec()->format('d.m.Y H:i').' | '.$rekord->getPacjent()->getImie().' '.$rekord->getPacjent()->getNazwisko().' | '.$rekord->getLekarz()->getTytulNaukowy().' '.$rekord->getLekarz()->getImie().' '.$rekord->getLekarz()->getNazwisko();
+        }
+
+        $objectManager->flush();
+        
+        if($powiadomienie && count($listaMailingowa) > 0){
+            self::powiadom($listaMailingowa, '<p>Informujemy, że poniższe wizyty zostały odwołane. </p> <p>Data wizyty | Pacjent | Lekarz</p> <p>'.implode('<br>', $listaWizytOdwolanych).'</p>', 'Odwołanie wizyty!');
+        }
         
         return true;
     }

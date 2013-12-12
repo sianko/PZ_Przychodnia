@@ -37,7 +37,7 @@ class IndexController extends AbstractActionController
                 }
             } else if($this->identity()->poziom == 1){
                 $repository = $objectManager->getRepository('Application\Entity\Lekarz');
-                $queryBuilder = $repository->createQueryBuilder('Application\Entity\Lekarz');
+                $queryBuilder = $repository->createQueryBuilder('dr');
                 $queryBuilder->where($queryBuilder->getRootAlias().'.os = '.$this->identity()->id);
                 $query = $queryBuilder->getQuery();
                 $tabLek = $query->execute();
@@ -46,7 +46,7 @@ class IndexController extends AbstractActionController
             $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
             
             $repository = $objectManager->getRepository('Application\Entity\Wizyta');
-            $queryBuilder = $repository->createQueryBuilder('Application\Entity\Wizyta');
+            $queryBuilder = $repository->createQueryBuilder('wz');
             
             $get_category = (int)$this->params()->fromRoute('category', 0);
             if($get_category == 1){ // tylko przyszłe
