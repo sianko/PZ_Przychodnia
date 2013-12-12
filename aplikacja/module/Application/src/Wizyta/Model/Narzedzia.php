@@ -234,7 +234,7 @@ class Narzedzia
                 
             } else {
                 $nowyStatusWizyty = 1;
-                $tablicaWarunkow[0] = $this->identity()->getId();
+                $tablicaWarunkow[0] = $this->identity()->id;
             }
             
         } else if($this->identity()->poziom == 2) {
@@ -259,37 +259,46 @@ class Narzedzia
             throw new \Exception('Nie masz uprawnień do tej operacji.');
             return false;
             }
-        
+            
+        unset($alias);
        
-        $repo = $objectManager->getRepository('\Application\Entity\Wizyta');
-        $queryBuilder = $repo->createQueryBuilder('\Application\Entity\Wizyta');
-        $alias = $queryBuilder->getRootAlias();
+        //$repo = $objectManager->getRepository('\Application\Entity\Wizyta');
+        $queryBuilder1 = $objectManager->createQueryBuilder('\Application\Entity\Wizyta');
+        /*$alias = $queryBuilder1->getRootAliases();
+        print_r($alias);
+        $alias = $alias[0];*/
         
-        $queryBuilder->set($alias.'.status', $nowyStatusWizyty);
+        if(isset($alias)){
+            $alias .= '.';
+        } else {
+            //$alias = '\Application\Entity\Wizyta.';
+            $alias = '';
+        }
+        $queryBuilder1->update('\Application\Entity\Wizyta');
+        $queryBuilder1->set($alias.'status', $nowyStatusWizyty);
         if(is_array($cel)){
-            $queryBuilder->where($alias.'.data >= '.date('Y-m-d H:i:s', strtotime($cel[0])));
-            $queryBuilder->andWhere($alias.'.data_koniec <= '.date('Y-m-d H:i:s', strtotime($cel[1])));
+            $queryBuilder1->where($alias.'data >= \''.date('Y-m-d H:i:s', strtotime($cel[0])).'\'');
+            $queryBuilder1->andWhere($alias.'data_koniec <= \''.date('Y-m-d H:i:s', strtotime($cel[1])).'\'');
             
-            
-            if($nowyStatusWizyty === 2){
-            $queryBuilder->join($alias.'.lekarz', 'z');
+           /* if($nowyStatusWizyty === 2){
+            $queryBuilder1->join($alias.'lekarz', 'z');
             } else {
-                $queryBuilder->join($alias.'.pacjent', 'z');
+                $queryBuilder1->join($alias.'pacjent', 'z');
             }
-            
-            if(isset($tablicaWarunkow)){
-                $warunek = implode(' OR '.$alias.'.'.($nowyStatusWizyty === 2 ? 'lekarz' : 'pacjent').' = ', $tablicaWarunkow);
-                $queryBuilder->andWhere($alias.'.'.($nowyStatusWizyty === 2 ? 'lekarz' : 'pacjent').' = '.$warunek);
+            */
+            /*if(isset($tablicaWarunkow)){
+                $warunek = implode(' OR '.$alias.''.($nowyStatusWizyty === 2 ? 'lekarz' : 'pacjent').' = ', $tablicaWarunkow);
+                $queryBuilder1->andWhere($alias.''.($nowyStatusWizyty === 2 ? 'lekarz' : 'pacjent').' = '.$warunek);
             }
-            
+            */
             
         } else {
-            $queryBuilder->where($alias.'.id = '.intval($cel));
+            $queryBuilder1->where($alias.'id = '.intval($cel));
         }
         
         
-        
-        $query = $queryBuilder->getQuery();
+        echo 'SQL: '.$queryBuilder1->getDql();
+        $query = $queryBuilder1->getQuery();
         $query->execute();
         
         return true;

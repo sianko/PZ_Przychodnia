@@ -20,8 +20,9 @@
             </h3>
             </td>
             <td style="vertical-align: middle; width: 320px;">
-                <a href="#" class="btn btn-success" title="">Zarejestruj się na wizytę!</a> 
-          
+                <?php if(!($this->identity()->poziom == 1 && $entityObject->getId() == $this->identity()->id)) { ?>
+                <a href="<?php echo $this->url('wizyta', array('controller' => 'rejestracja', 'action' => 'zapiszSie')); ?>" class="btn btn-success" title="">Zarejestruj się na wizytę!</a> 
+                <?php } ?>
                 <span class="btn btn-info grafik-open" data-toggle="popover" title="" data-content="<?php echo $this->escapeHtml($this->partial('partial/grafik_lekarza', array('grafik'=>$entityObject->getGrafikArray(), 'lekarz_id' =>$entityObject->getLid()))); ?>" role="button" data-placement="left" data-original-title="Ogólny grafik pracy">Zobacz grafik</span> 
             </td>
         </tr>

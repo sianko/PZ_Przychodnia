@@ -51,7 +51,7 @@
                   <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Panel Pacjenta<b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                  <li><a href="#">Moje wizyty</a></li>
+                                  <li><a href="<?php echo $this->url('wizyta', array('controller' => 'index')); ?>">Moje wizyty</a></li>
                                   <li><a href="#">Zapisz się na wizytę</a></li>
                                   <li><a href="#">Znajdź lekarza</a></li>
                                   <li class="divider"></li>
@@ -66,7 +66,7 @@
                   <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Panel Lekarza<b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                  <li><a href="#">Moje wizyty</a></li>
+                                  <li><a href="<?php echo $this->url('wizyta', array('controller' => 'index')); ?>">Moje wizyty</a></li>
                                   <li><a href="<?php echo $this->url('lekarz', array('controller' => 'profil', 'action' => 'dodaj')); ?>">Dodaj specjalność</a></li>
                                   
                                   <li><a href="<?php echo $this->url('lekarz', array('controller' => 'profil', 'action' => 'moje-specjalnosci')); ?>">Moje specjalności</a></li>
@@ -83,7 +83,7 @@
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Panel Recepcjonisty<b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                   <li><a href="<?php echo $this->url('uzytkownik', array('action' => 'index')); ?>">Użytkownicy</a></li>
-                                  <li><a href="#">Wizyty</a></li>
+                                  <li><a href="<?php echo $this->url('wizyta', array('controller' => 'index')); ?>">Wizyty</a></li>
                                   <li class="divider"></li>
                                   <li><a href="<?php echo $this->url('lekarz', array('action' => 'edytuj', 'id' => 0)); ?>">Dodaj lekarza</a></li>
                                   <li><a href="<?php echo $this->url('lekarz'); ?>">Lekarze</a></li>

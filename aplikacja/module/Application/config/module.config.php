@@ -166,16 +166,17 @@ return array(
             'wizyta' => array(
                 'type'    => 'Segment',
                     'options' => array(
-                        'route'    => '/wizyta[/:controller[/:action[/:id]]][/os/:oid][/t/:category][/sort/:sort/:met][/s:page][/]',
+                        'route'    => '/wizyta[/:controller[/:action[/:id]]][/os/:oid][/dr/:did][/t/:category][/so/:sort/:met][/s:page][/]',
                         'constraints' => array(
-                                'controller' => '[a-zA-Z]{2}[a-zA-Z0-9_\-]*',
-                                'action'     => '[a-zA-Z]{2}[a-zA-Z0-9_\-]*',
+                                'controller' => '[a-zA-Z]{3}[a-zA-Z0-9_\-]*',
+                                'action'     => '[a-zA-Z]{3}[a-zA-Z0-9_\-]*',
                                 'id'     => '[0-9]*',
                                 'page'     => '[0-9]*',
                                 'category' => '[0-9]*',
                                 'oid' => '[0-9]*',
                                 'sort' => '[a-zA-Z]*',
-                                'met' => '[a-zA-Z]*'
+                                'met' => '[a-zA-Z]*',
+                                'did' => '[0-9]*'
                             ),
                         'defaults' => array(
                             '__NAMESPACE__' => 'Wizyta\Controller',
@@ -186,7 +187,8 @@ return array(
                             'category' => 0,
                             'oid' => 0,
                             'sort' => 'data',
-                            'met' => 'desc'
+                            'met' => 'desc',
+                            'did' => 0
                         ),
                     ),
             ),

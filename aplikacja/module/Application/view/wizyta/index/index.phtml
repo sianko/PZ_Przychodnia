@@ -35,6 +35,26 @@
         </h1>
      </div>
     <div class="col-md-3 text-right">
+    
+     <div class="btn-group text-left" style="margin-top: 5px;">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            Ustaw <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <?php
+               echo '<li><a href="'.($this->url($this->route, array('category'=>0), false, true)).'">Pokaż wszystkie</a></li>';
+               echo '<li><a href="'.($this->url($this->route, array('category'=>1), false, true)).'">Tylko przyszłe</a></li>';
+               echo '<li><a href="'.($this->url($this->route, array('category'=>2), false, true)).'">Tylko przeszłe</a></li>';
+               echo '<li class="divider"></li>';
+               echo '<li><a href="'.($this->url($this->route, array('sort'=>'data', 'asc'), false, true)).'">Sortuj wzgl. daty rosnąco</a></li>';
+               echo '<li><a href="'.($this->url($this->route, array('sort'=>'data', 'desc'), false, true)).'">Sortuj wzgl. daty malejąco</a></li>';
+               echo '<li><a href="'.($this->url($this->route, array('sort'=>'id', 'asc'), false, true)).'">Sortuj wzgl. id rosnąco</a></li>';
+               echo '<li><a href="'.($this->url($this->route, array('sort'=>'id', 'desc'), false, true)).'">Sortuj wzgl. id malejąco</a></li>';               
+            ?>
+          </ul>
+        </div>
+    
+    <?php if($this->identity()->poziom == 2) : ?>
         <div class="btn-group text-left" style="margin-top: 5px;">
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
             Wybierz osobę <span class="caret"></span>
@@ -49,6 +69,8 @@
             ?>
           </ul>
         </div>
+     <?php endif; ?>   
+        
     </div>
 </div>
  

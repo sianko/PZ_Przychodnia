@@ -20,7 +20,7 @@ class RejestracjaController extends AbstractActionController
          $msg= null;
          
          //$r = self::zapiszNaWizyte($this, '2013-12-10 17:00:00', 1, 6, true, true, null, true);
-         $r = self::zapiszNaWizyte($this, '2013-12-10 10:00:00', 1, 3, true, true, 60*8);
+         $r = self::zapiszNaWizyte($this, '2013-12-20 12:00:00', 2, 6);
          
          if($r === true){
             $msg[0] = 1;

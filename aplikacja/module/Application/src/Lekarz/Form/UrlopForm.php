@@ -30,7 +30,7 @@ class UrlopForm extends Form
         
         for($i=1; $i<=59; $i++)
         {
-            $min[$i] = $i;
+            $min[$i] = $i < 10 ? '0'.$i : $i;
         }
         
         for($i=1; $i<=24; $i++)

@@ -6,10 +6,55 @@
     foreach($this->all as $entityObject) :
    ?>
 
-    <div class="panel panel-default">
+    <div class="panel panel-default" style="padding: 10px 5px;">
         
         <?php
-            echo $this->escapeHtml($entityObject->getId()).' | '.$this->escapeHtml($entityObject->getData()->format('d.m.Y H:i')).' - '.$this->escapeHtml($entityObject->getDataKoniec()->format('d.m.Y H:i')).' | '.$this->escapeHtml($entityObject->getPacjent()->getPesel()).' | '.$this->escapeHtml($entityObject->getLekarz()->getLid());
+            if($entityObject->getStatus() == 0){
+                $statAlertCSS = 'success';
+                $statPrzezKogo = '';
+            } else if($entityObject->getStatus() == 1){
+                $statAlertCSS = 'danger';
+                $statPrzezKogo = '<small><i>odwołana przez pacjenta</i></small>';
+            } else if($entityObject->getStatus() == 2){
+                $statAlertCSS = 'danger';
+                $statPrzezKogo = '<small><i>odwołana przez lekarza</i></small>';
+            } 
+            echo '<span class="alert alert-'.$statAlertCSS.'" style="font-size: 14px;">'.$this->escapeHtml($entityObject->getData()->format('H:i d.m.Y')).' - '.$this->escapeHtml($entityObject->getDataKoniec()->format('H:i d.m.Y')).'</span> '.$statPrzezKogo;
+            
+             if($entityObject->getStatus() == 0 && $this->identity()->poziom != 2) {
+        ?>
+                
+          <a href="<?php echo $this->url($this->route, array('id' => $this->escapeHtml($entityObject->getId()), 'action' => 'odwolaj')); ?>" class="btn btn-warning btn-xs">
+            Odwołaj wizytę
+          </a>
+          
+        <?php
+            } else if($entityObject->getStatus() == 0) {
+        ?>
+           
+        <div class="btn-group text-left" style="margin-top: 0px;">
+          <a class="btn btn-warning btn-xs dropdown-toggle" data-toggle="dropdown">
+            Odwołaj wizytę <span class="caret"></span>
+          </a>
+          <ul class="dropdown-menu" role="menu">
+            <?php
+               echo '<li><a href="'.($this->url($this->route, array('did'=>1, 'id' => $this->escapeHtml($entityObject->getId()), 'action' => 'odwolaj'))).'">jako lekarz</a></li>';
+               echo '<li><a href="'.($this->url($this->route, array('did'=>0, 'id' => $this->escapeHtml($entityObject->getId()), 'action' => 'odwolaj'))).'">jako pacjent</a></li>';               
+            ?>
+          </ul>
+        </div>
+        
+        <?php
+            }
+            
+            if($this->identity()->poziom == 2){
+                echo ' <a href="'.$this->url($this->route, array('id' => $this->escapeHtml($entityObject->getId()), 'action' => 'usun')).'" class="btn btn-danger btn-xs">
+                Usuń wizytę
+              </a> ';
+            }
+            
+            
+            echo ' <h3><small>Pacjent:</small> '.$this->escapeHtml($entityObject->getPacjent()->getImie()).' '.$this->escapeHtml($entityObject->getPacjent()->getNazwisko()).' <span style="margin-left: 35px"><small>Lekarz:</small> '.$this->escapeHtml($entityObject->getLekarz()->getTytulNaukowy().' '.$entityObject->getLekarz()->getImie()).' '.$this->escapeHtml($entityObject->getLekarz()->getNazwisko()).'</span></h3>';
         ?>
         
     </div>
