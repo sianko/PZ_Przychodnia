@@ -27,14 +27,49 @@
  
  ?>
  <div class="row">
-     <div class="col-md-9">
+     <div class="col-md-5">
         <h1 style="margin-top: 5px;">
         <?php 
             echo $this->escapeHtml($title); 
         ?>    
         </h1>
      </div>
-    <div class="col-md-3 text-right">
+    <div class="col-md-7 text-right">
+    
+    <?php if($this->identity()->poziom == 2) : ?>
+    
+        <div class="btn-group text-left" style="margin-top: 5px;">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            Lekarz <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <?php
+               echo '<li><a href="'.($this->url($this->route, array('did'=>0), false, true)).'">Wszyscy</a></li>';
+               
+               foreach($this->lekarze as $osoba) { 
+                    echo '<li><a href="'.($this->url($this->route, array('did'=>$osoba->getLid()), false, true)).'">'.$this->escapeHtml($osoba->getImie()).' '.$this->escapeHtml($osoba->getNazwisko()). ' [' . $this->escapeHtml($osoba->getSpec()->getNazwa()) .']</a></li>';
+               }
+            ?>
+          </ul>
+        </div>
+    
+        <div class="btn-group text-left" style="margin-top: 5px;">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            Pacjent <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <?php
+               echo '<li><a href="'.($this->url($this->route, array('oid'=>0), false, true)).'">Wszyscy</a></li>';
+               
+               foreach($this->osoby as $osoba) { 
+                    echo '<li><a href="'.($this->url($this->route, array('oid'=>$osoba->getId()), false, true)).'">'.$this->escapeHtml($osoba->getImie()).' '.$this->escapeHtml($osoba->getNazwisko()). ' [' . $this->escapeHtml($osoba->getPesel()) .']</a></li>';
+               }
+            ?>
+          </ul>
+        </div>
+
+     <?php endif; ?> 
+    
     
      <div class="btn-group text-left" style="margin-top: 5px;">
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -42,40 +77,34 @@
           </button>
           <ul class="dropdown-menu" role="menu">
             <?php
-               echo '<li><a href="'.($this->url($this->route, array('category'=>0), false, true)).'">Pokaż wszystkie</a></li>';
-               echo '<li><a href="'.($this->url($this->route, array('category'=>1), false, true)).'">Tylko przyszłe</a></li>';
-               echo '<li><a href="'.($this->url($this->route, array('category'=>2), false, true)).'">Tylko przeszłe</a></li>';
+               echo '<li><a href="'.($this->url($this->route, array('category'=>1), false, true)).'">Pokaż wszystkie</a></li>';
+               echo '<li><a href="'.($this->url($this->route, array('category'=>'0'.$this->sufiksDlaParametru), false, true)).'">Tylko przyszłe</a></li>';
+               echo '<li><a href="'.($this->url($this->route, array('category'=>'2'.$this->sufiksDlaParametru), false, true)).'">Tylko przeszłe</a></li>';
+               
                echo '<li class="divider"></li>';
-               echo '<li><a href="'.($this->url($this->route, array('sort'=>'data', 'asc'), false, true)).'">Sortuj wzgl. daty rosnąco</a></li>';
-               echo '<li><a href="'.($this->url($this->route, array('sort'=>'data', 'desc'), false, true)).'">Sortuj wzgl. daty malejąco</a></li>';
-               echo '<li><a href="'.($this->url($this->route, array('sort'=>'id', 'asc'), false, true)).'">Sortuj wzgl. id rosnąco</a></li>';
-               echo '<li><a href="'.($this->url($this->route, array('sort'=>'id', 'desc'), false, true)).'">Sortuj wzgl. id malejąco</a></li>';               
+               
+               echo '<li><a href="'.($this->url($this->route, array('category'=>$this->prefiksDlaParametru.'1'), false, true)).'">Pomiń nieobecności</a></li>';
+               echo '<li><a href="'.($this->url($this->route, array('category'=>$this->prefiksDlaParametru.'2'), false, true)).'">Tylko nieodwołane wizyty</a></li>';
+               echo '<li><a href="'.($this->url($this->route, array('category'=>$this->prefiksDlaParametru.'3'), false, true)).'">Tylko odwołane wizyty</a></li>';
+               
+               echo '<li class="divider"></li>';
+               echo '<li><a href="'.($this->url($this->route, array('sort'=>'data', 'met' => 'asc'), false, true)).'">Sortuj wzgl. daty rosnąco</a></li>';
+               echo '<li><a href="'.($this->url($this->route, array('sort'=>'data', 'met' => 'desc'), false, true)).'">Sortuj wzgl. daty malejąco</a></li>';
+               echo '<li><a href="'.($this->url($this->route, array('sort'=>'lekarz', 'met' => 'asc'), false, true)).'">Grupuj wzgl. lekarzy</a></li>';             
             ?>
           </ul>
         </div>
     
-    <?php if($this->identity()->poziom == 2) : ?>
-        <div class="btn-group text-left" style="margin-top: 5px;">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-            Wybierz osobę <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu">
-            <?php
-               echo '<li><a href="'.($this->url($this->route, array('id'=>0), false, true)).'">Wszystkie</a></li>';
-               
-               foreach($this->osoby as $osoba) { 
-                echo '<li><a href="'.($this->url($this->route, array('oid'=>$osoba->getId()), false, true)).'">'.$this->escapeHtml($osoba->getImie()).' '.$this->escapeHtml($osoba->getNazwisko()). ' [' . $this->escapeHtml($osoba->getPesel()) .']</a></li>';
-               }
-            ?>
-          </ul>
-        </div>
-     <?php endif; ?>   
+     <div class="btn-group text-left" style="margin-top: 5px;">
+          <a href="<?php echo $this->url($this->route); ?>" class="btn btn-primary btn-sm">
+            <span class="glyphicon glyphicon-eye-close"></span> Wyczyść filtry
+          </a>
+     </div>
         
     </div>
 </div>
  
 
- 
 <?php 
     echo $this->partial('partial/lista_wizyt', array('stronicowanieStrony' => $this->stronicowanieStrony, 'all' => $this->all));
 ?>

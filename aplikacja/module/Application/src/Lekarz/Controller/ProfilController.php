@@ -71,7 +71,7 @@ class ProfilController extends AbstractActionController
     {
         $get_id = (int)$this->params()->fromRoute('id', 0);   
         
-        if(!$this->identity() || !($this->identity()->poziom == 1 || $this->identity()->poziom == 2)) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie'));
+        if(!$this->identity() || !($this->identity()->poziom == 1 || $this->identity()->poziom == 2)) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie', 'id' => 1));
         
         $edycjaCzyDodawanie = 1;
         $msg = null;
@@ -214,7 +214,7 @@ class ProfilController extends AbstractActionController
     {
         $get_id = (int)$this->params()->fromRoute('id', 0);   
         
-        if(!$this->identity() || !($this->identity()->poziom == 1 || $this->identity()->poziom == 2)) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie'));
+        if(!$this->identity() || !($this->identity()->poziom == 1 || $this->identity()->poziom == 2)) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie', 'id' => 1));
         
         $msg = null;
 
@@ -253,7 +253,7 @@ class ProfilController extends AbstractActionController
     {
         $get_id = (int)$this->params()->fromRoute('id', 0);   
         
-        if(!$this->identity() || !($this->identity()->poziom == 1 || $this->identity()->poziom == 2)) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie'));
+        if(!$this->identity() || !($this->identity()->poziom == 1 || $this->identity()->poziom == 2)) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie', 'id' => 1));
         
         $msg = null;
 
@@ -274,7 +274,7 @@ class ProfilController extends AbstractActionController
                 $data_od = $data['data_od_2'].'-'.$data['data_od_1'].'-'.$data['data_od_0'].' '.$data['data_od_3'].':'.$data['data_od_4'];
                 $data_do = $data['data_do_2'].'-'.$data['data_do_1'].'-'.$data['data_do_0'].' '.$data['data_do_3'].':'.$data['data_do_4'];
                 
-                $powiadomienie = isset($data['powiadom']) && $data['powiadom'] === 'tak' ? true : false;
+                $powiadomienie = isset($data['powiadom']) && $data['powiadom'] == 'tak' ? true : false;
                 
                 $validator = new DataValid(array('format' => 'Y-n-j G:i'));
                 if($validator->isValid($data_od) && $validator->isValid($data_do) && strtotime($data_od) <= strtotime($data_do)  && strtotime($data_od) >= time()-300){
@@ -296,7 +296,7 @@ class ProfilController extends AbstractActionController
                     // Użytkownik o id = 1, jest użytkownikiem "systemowym", na którego nie można się zalogować.
                     \Wizyta\Controller\RejestracjaController::zapiszNaWizyte($this, $data_od, 1, $this->identity()->id, false, false, $roznicaCzasu, true);
                 
-                    return array('msg' => array(0=>1, 1=>'Dodano informację o nieobecności.'));  
+                    return array('msg' => array(0=>1, 1=>'Dodano informację o nieobecności ' . ($powiadomienie ? ' oraz poinformowano pacjentów o zmianach.' : '.')));  
                 
                 } else {
                      return array('msg' => array(0=>0, 1=>'Podany przedział jest nieprawidłowy.'));  

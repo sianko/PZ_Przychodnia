@@ -22,20 +22,20 @@ class IndexController extends AbstractActionController
 
             $get_did = (int)$this->params()->fromRoute('did', 0);
             
-            if(!$this->identity()) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie'));
+            if(!$this->identity()) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie', 'id' => 1));
             
             if($this->identity()->poziom == 0){
                 $get_oid = $this->identity()->id;
                 $get_did = 0;
-            } else if($get_did > 0 && $this->identity()->poziom == 1){
+            } else if($get_did > 0 && intval($this->identity()->poziom) === 1){
                 $get_oid = 0;
                 
                 $l = $objectManager->find('Application\Entity\Lekarz', $get_did);
                 
                 if(!($l instanceof \Application\Entity\Lekarz) || ($l->getId() != $this->identity()->id)){
-                    return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie'));
+                    return $this->redirect()->toRoute('wizyta');
                 }
-            } else if($this->identity()->poziom == 1){
+            } else if(intval($this->identity()->poziom) === 1){
                 $repository = $objectManager->getRepository('Application\Entity\Lekarz');
                 $queryBuilder = $repository->createQueryBuilder('dr');
                 $queryBuilder->where($queryBuilder->getRootAlias().'.os = '.$this->identity()->id);
@@ -49,10 +49,26 @@ class IndexController extends AbstractActionController
             $queryBuilder = $repository->createQueryBuilder('wz');
             
             $get_category = (int)$this->params()->fromRoute('category', 0);
-            if($get_category == 1){ // tylko przyszłe
+            $get_category_subparam = 0;
+            if($get_category >= 10){
+                $get_category_subparam = $get_category % 10;
+                $get_category = ($get_category-$get_category_subparam)/10;
+            }
+            
+            if($get_category == 0 || $get_category == 3){ // tylko przyszłe
                 $queryBuilder->where($queryBuilder->getRootAlias().'.data >= \''.date('Y-m-d H:i').'\'');
             } else if($get_category == 2){ // tylko przeszłe
                 $queryBuilder->where($queryBuilder->getRootAlias().'.data < \''.date('Y-m-d H:i').'\'');
+            }
+            
+            if($get_category_subparam == 1){
+               $queryBuilder->andWhere($queryBuilder->getRootAlias().'.pacjent != 1');
+            } else if($get_category_subparam == 2){
+               $queryBuilder->andWhere($queryBuilder->getRootAlias().'.pacjent != 1');
+               $queryBuilder->andWhere($queryBuilder->getRootAlias().'.status = 0');
+            } else if($get_category_subparam == 3){
+               $queryBuilder->andWhere($queryBuilder->getRootAlias().'.pacjent != 1');
+               $queryBuilder->andWhere($queryBuilder->getRootAlias().'.status > 0');
             }
             
             if($get_oid > 0){
@@ -64,14 +80,16 @@ class IndexController extends AbstractActionController
             }
             
             if(isset($tabLek) && is_array($tabLek)){
+                
                 foreach($tabLek as $lek){
-                    $queryBuilder->andWhere($queryBuilder->getRootAlias().'.lekarz = '.$lek->getLid());
+                    $warunekLID[] = $lek->getLid();
                 }
-            
+                
+                $queryBuilder->andWhere($queryBuilder->getRootAlias().'.lekarz = '.implode(' OR '.$queryBuilder->getRootAlias().'.lekarz = ', $warunekLID));
             }
 
             $get_sort = $this->params()->fromRoute('sort', 'data');
-            $get_met = $this->params()->fromRoute('met', 'desc');
+            $get_met = $this->params()->fromRoute('met', 'asc');
             
             if(!(($get_sort == 'data' || $get_sort == 'id' || $get_sort == 'status' || $get_sort == 'lekarz' || $get_sort == 'pacjent') && ($get_met == 'desc' || $get_met == 'asc')))
             {
@@ -88,11 +106,27 @@ class IndexController extends AbstractActionController
             $paginator->setCurrentPageNumber($this->params()->fromRoute('page', 0));
             //$paginator->setDefaultItemCountPerPage(2);
             
+            $repository = $objectManager->getRepository('Application\Entity\Lekarz');
+            $lekarzeLista = $repository->findAll();
+            
             $repository = $objectManager->getRepository('Application\Entity\Osoba');
-            $osoby = $repository->findAll();
+            $createQueryBuilder = $repository->createQueryBuilder('os');
+            $createQueryBuilder->where($createQueryBuilder->getRootAlias().'.poziom != 1');
+            $q = $createQueryBuilder->getQuery();
+            $osobyLista = $q->execute();
             
+            if($get_category == 0 || $get_category == 3) $prefiksDlaParametru = '3';
+            else if($get_category == 1) $prefiksDlaParametru = '1';
+            else if($get_category == 2) $prefiksDlaParametru = '2';
+            else $prefiksDlaParametru = '';
             
-            return array('all' => $paginator->getCurrentItems(), 'stronicowanieStrony' => $paginator->getPages('Sliding'), 'osoby' => $osoby);
+            $sufiksDlaParametru = '';
+            if($get_category_subparam > 0) $sufiksDlaParametru = $get_category_subparam;
+            
+            // $prefiksDlaParametru potrzebny jest przy przesyłaniu parametrów met. GET; 
+            // dzięki temu jeden parametr "category" może "obsłużyć" więcej przypadków
+            
+            return array('all' => $paginator->getCurrentItems(), 'stronicowanieStrony' => $paginator->getPages('Sliding'), 'osoby' => $osobyLista, 'lekarze' => $lekarzeLista, 'prefiksDlaParametru' => $prefiksDlaParametru, 'sufiksDlaParametru' => $sufiksDlaParametru);
     }
     
     public function wolneTerminyAction(){
@@ -107,7 +141,7 @@ class IndexController extends AbstractActionController
     {
         $get_id = (int)$this->params()->fromRoute('id', 0);   
         
-        if(!$this->identity() || $this->identity()->poziom != 2) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie'));
+        if(!$this->identity() || !($this->identity()->poziom == 1 || $this->identity()->poziom == 2)) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie', 'id' => 1));
         
         $msg = null;
 
@@ -123,6 +157,10 @@ class IndexController extends AbstractActionController
                 return array('msg' => array(0=>0, 1=>'Niewłaściwy identyfikator wizyty.'));    
 
             } else {
+                if($this->identity()->poziom == 1 && ($wiz->getLekarz()->getId() != $this->identity()->id || $wiz->getPacjent()->getId() != 1)){
+                    return array('msg' => array(0=>0, 1=>'Nie masz uprawnień do tej operacji.'));
+                }
+            
                 $objectManager->remove($wiz);
                 $objectManager->flush();
                 return array('msg' => array(0=>1, 1=>'Usunięto pomyślnie.'));
@@ -143,7 +181,7 @@ class IndexController extends AbstractActionController
         $get_id = (int)$this->params()->fromRoute('id', 0);   
         $get_dr = (int)$this->params()->fromRoute('did', 0); 
         
-        if(!$this->identity()) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie'));
+        if(!$this->identity()) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie', 'id' => 1));
         
         $msg = null;
 

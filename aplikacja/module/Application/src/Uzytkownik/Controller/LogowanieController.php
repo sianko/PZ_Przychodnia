@@ -91,7 +91,10 @@ class LogowanieController extends AbstractActionController
             }
         } else return $this->redirect()->toRoute('uzytkownik', array('controller' => 'profil'));
         
-            return array('form' => $form, 'result' => $result);
+            $get_id = (int)$this->params()->fromRoute('id', 0);
+            $pokazKomunikat = $get_id === 1 ? true : false;  
+            
+            return array('form' => $form, 'result' => $result, 'pokazKomunikat' => $pokazKomunikat);
             
     }
     

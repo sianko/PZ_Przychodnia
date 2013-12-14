@@ -173,8 +173,12 @@ class UrlopForm extends Form
         $this->add(array(
             'name' => 'powiadom',
 			'type' => 'Zend\Form\Element\Checkbox',
+            'options' => array(
+                'checked_value' => 'tak',
+                'unchecked_value' => 'bad'
+            ),
             'attributes' => array(
-                'value' => 'tak'
+                'checked' => 'checked'
             )
         ));          
 		

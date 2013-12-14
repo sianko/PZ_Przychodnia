@@ -62,7 +62,7 @@ return array(
                     'route'    => '/',
                     'defaults' => array(
                         '__NAMESPACE__' => 'Application\Controller',
-                        'controller' => 'Index',
+                        'controller' => 'index',
                         'action'     => 'index',
                     ),
                 ),
@@ -73,7 +73,7 @@ return array(
                     'route'    => '/kontakt',
                     'defaults' => array(
                         '__NAMESPACE__' => 'Application\Controller',
-                        'controller'    => 'Kontakt',
+                        'controller'    => 'kontakt',
                         'action'        => 'index',
                     ),
                 ),
@@ -111,7 +111,7 @@ return array(
             'uzytkownik' => array(
                 'type'    => 'Segment',
                     'options' => array(
-                        'route'    => '/uzytkownik[/:controller[/:action[/:id]]][/s:page][/]',
+                        'route'    => '/uzytkownik[/:controller[/:action]][/:id][/s:page][/]',
                         'constraints' => array(
                                 'controller' => '[a-zA-Z]{2}[a-zA-Z0-9_\-]*',
                                 'action'     => '[a-zA-Z]{2}[a-zA-Z0-9_\-]*',
@@ -180,14 +180,14 @@ return array(
                             ),
                         'defaults' => array(
                             '__NAMESPACE__' => 'Wizyta\Controller',
-                            'controller'    => 'Index',
+                            'controller'    => 'index',
                             'action'        => 'index',
                             'id' => 0,
                             'page' => 1,
                             'category' => 0,
                             'oid' => 0,
                             'sort' => 'data',
-                            'met' => 'desc',
+                            'met' => 'asc',
                             'did' => 0
                         ),
                     ),

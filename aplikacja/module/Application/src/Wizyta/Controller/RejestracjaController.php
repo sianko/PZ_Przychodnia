@@ -17,10 +17,12 @@ class RejestracjaController extends AbstractActionController
     
     public function zapiszSieAction()
     {
+         if(!($this->identity())) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie', 'id' => 1));
+         
          $msg= null;
          
          //$r = self::zapiszNaWizyte($this, '2013-12-10 17:00:00', 1, 6, true, true, null, true);
-         $r = self::zapiszNaWizyte($this, '2013-12-20 12:00:00', 2, 6);
+         $r = self::zapiszNaWizyte($this, '2013-12-15 15:00:00', 7, 6);
          
          if($r === true){
             $msg[0] = 1;

@@ -36,11 +36,11 @@ class Narzedzia
         }
         
         $message = '
-                <p style="background: #00A3D9; color: #fff;">Wirtualna Przychodnia</p>
-                <div>
+                <p style="color: #00A3D9; font-weight: bold; border-bottom: 1px solid #00A3D9;">&lsaquo; Dzień dobry, Wirtualna Przychodnia informuje:</p>
+                <div style="padding-left: 10px; background: #BFDFFF;">
                 '.$wiadomosc.'
                 </div>
-                <p style="background: #00A3D9; color: #fff;">Wirtualna Przychodnia<br />tel. 452 456 842<br />fax. 484 125 458<br />www: wp.med.pl</p>
+                <p style="color: #00A3D9; font-weight: bold; border-top: 1px solid #00A3D9; font-size: 9px; font-style: italic;">Wirtualna Przychodnia<br />tel. 452 456 842<br />fax. 484 125 458<br />www: wp.med.pl</p>
                 ';
         
         if($temat === null){
@@ -51,12 +51,12 @@ class Narzedzia
 
 
         $headers  = 'MIME-Version: 1.0' . "\r\n";
-        $headers .= 'Content-type: text/html; charset=iso-8859-2' . "\r\n";
+        $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
         $headers .= 'From: Wirtualna Przychodnia <wirtualna-przychodnia@example.com>' . "\r\n";
         $headers .= 'Bcc: ' . $recipents . "\r\n";
 
-        //return mail('', $subject, $message, $headers);
-        return true;
+        return mail('', $subject, $message, $headers);
+        
     }
     
     /**
@@ -290,25 +290,31 @@ class Narzedzia
         $pobrane = $query->execute();
  
         $listaMailingowa = array();
-        $listaWizytOdwolanych = array();
         
         foreach($pobrane as $rekord){
             $rekord->setStatus($nowyStatusWizyty);
             $objectManager->persist($rekord);
             
             if($powiadomienie && $nowyStatusWizyty == 2){
-                $listaMailingowa[] = $rekord()->getPacjent();
+                $listaMailingowa[] = $rekord->getPacjent();
             } else if($powiadomienie) {
-                $listaMailingowa[] = $rekord()->getLekarz();
+                $listaMailingowa[] = $rekord->getLekarz();
             }
             
-            $listaWizytOdwolanych[] = $rekord->getData()->format('d.m.Y H:i').' - '.$rekord->getDataKoniec()->format('d.m.Y H:i').' | '.$rekord->getPacjent()->getImie().' '.$rekord->getPacjent()->getNazwisko().' | '.$rekord->getLekarz()->getTytulNaukowy().' '.$rekord->getLekarz()->getImie().' '.$rekord->getLekarz()->getNazwisko();
+            $ostatniaWizytaData = $rekord->getData()->format('H:i d.m.Y');
+            $ostatniaWizytaDataKoniec = $rekord->getDataKoniec()->format('H:i d.m.Y');;
         }
 
         $objectManager->flush();
-        
+
         if($powiadomienie && count($listaMailingowa) > 0){
-            self::powiadom($listaMailingowa, '<p>Informujemy, że poniższe wizyty zostały odwołane. </p> <p>Data wizyty | Pacjent | Lekarz</p> <p>'.implode('<br>', $listaWizytOdwolanych).'</p>', 'Odwołanie wizyty!');
+            if(is_array($cel)){
+                $komunikatEmail = 'Informujemy, że wizyty które miały odbyć się w dniach <b>'.date('H:i d.m.Y', strtotime($cel[0])).' - '.date('H:i d.m.Y', strtotime($cel[1])).'</b> zostały odwołane.';
+            } else {
+                
+                $komunikatEmail = 'Informujemy, że wizyta która miała odbyć się w dniu <b>'.$ostatniaWizytaData.' - '.$ostatniaWizytaDataKoniec.'</b> została odwołana.';
+            }
+            self::powiadom($listaMailingowa, '<p>'.$komunikatEmail.'</p>', 'Wizyta została odwołana!');
         }
         
         return true;

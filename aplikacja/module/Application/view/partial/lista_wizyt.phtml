@@ -1,4 +1,4 @@
-<?php if($this->stronicowanieStrony->currentItemCount > 0) { ?>
+<?php if($this->identity() && $this->stronicowanieStrony->currentItemCount > 0) { ?>
  
   
    <?php 
@@ -17,17 +17,29 @@
                 
             } else if($entityObject->getStatus() == 1){
                 $statAlertCSS = 'danger';
-                $statPrzezKogo = '<small><i>odwołana przez pacjenta</i></small>';
+                $statPrzezKogo = '<small><span class="glyphicon glyphicon-exclamation-sign"></span> <i>odwołana przez pacjenta</i></small>';
             } else if($entityObject->getStatus() == 2){
                 $statAlertCSS = 'danger';
-                $statPrzezKogo = '<small><i>odwołana przez lekarza</i></small>';
+                $statPrzezKogo = '<small><span class="glyphicon glyphicon-exclamation-sign"></span> <i>odwołana przez lekarza</i></small>';
             } 
-            echo '<span class="alert alert-'.$statAlertCSS.'" style="font-size: 14px;">'.$this->escapeHtml($entityObject->getData()->format('H:i d.m.Y')).' - '.$this->escapeHtml($entityObject->getDataKoniec()->format('H:i d.m.Y')).'</span> '.$statPrzezKogo;
+            echo '<span class="alert alert-'.$statAlertCSS.'" style="font-size: 14px;"><span class="glyphicon glyphicon-time"></span> '.$this->escapeHtml($entityObject->getData()->format('H:i d.m.Y')).' - '.$this->escapeHtml($entityObject->getDataKoniec()->format('H:i d.m.Y')).'</span> '.'
+             
+            <span class="label label-default"><span class="glyphicon glyphicon-briefcase"></span> '.$this->escapeHtml($entityObject->getLekarz()->getSpec()->getNazwa()).'</span> <span class="label label-danger">'.$statPrzezKogo.'</span>';
             
-             if($entityObject->getStatus() == 0 && $this->identity()->poziom != 2) {
+            echo ' <div class="btn-group text-right" style="margin-top: 0px; float: right;">';
+            
+            
+            
+             if($entityObject->getPacjent()->getId() == 1){
+                echo ' <a href="'.$this->url($this->route, array('id' => $this->escapeHtml($entityObject->getId()), 'action' => 'usun')).'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> 
+                Odwołaj nieobecność
+              </a> ';
+             
+             }
+             else if($entityObject->getStatus() == 0 && $this->identity()->poziom != 2) {
         ?>
                 
-          <a href="<?php echo $this->url($this->route, array('id' => $this->escapeHtml($entityObject->getId()), 'action' => 'odwolaj')); ?>" class="btn btn-warning btn-xs">
+          <a href="<?php echo $this->url($this->route, array('id' => $this->escapeHtml($entityObject->getId()), 'action' => 'odwolaj')); ?>" class="btn btn-warning btn-xs"> <span class="glyphicon glyphicon-warning-sign"></span>  
             Odwołaj wizytę
           </a>
           
@@ -36,7 +48,7 @@
         ?>
            
         <div class="btn-group text-left" style="margin-top: 0px;">
-          <a class="btn btn-warning btn-xs dropdown-toggle" data-toggle="dropdown">
+          <a class="btn btn-warning btn-xs dropdown-toggle" data-toggle="dropdown"> <span class="glyphicon glyphicon-warning-sign"></span> 
             Odwołaj wizytę <span class="caret"></span>
           </a>
           <ul class="dropdown-menu" role="menu">
@@ -51,18 +63,21 @@
             }
             
             if($this->identity()->poziom == 2){
-                echo ' <a href="'.$this->url($this->route, array('id' => $this->escapeHtml($entityObject->getId()), 'action' => 'usun')).'" class="btn btn-danger btn-xs">
+                echo ' <a href="'.$this->url($this->route, array('id' => $this->escapeHtml($entityObject->getId()), 'action' => 'usun')).'" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-trash"></span> 
                 Usuń wizytę
               </a> ';
             }
             
+            echo '</div>';
+            
             if($entityObject->getPacjent()->getId() != 1){
                 echo ' <h3><small>Pacjent:</small> '.$this->escapeHtml($entityObject->getPacjent()->getImie()).' '.$this->escapeHtml($entityObject->getPacjent()->getNazwisko());
             } else {
-                echo ' <h3>URLOP';
+                echo ' <h3>NIEOBECNOŚĆ';
             }
             
-            echo ' <span style="margin-left: 35px"><small>Lekarz:</small> '.$this->escapeHtml($entityObject->getLekarz()->getTytulNaukowy().' '.$entityObject->getLekarz()->getImie()).' '.$this->escapeHtml($entityObject->getLekarz()->getNazwisko()).'</span></h3>';
+            echo ' <span style="margin-left: 35px"><small>Lekarz:</small> '.$this->escapeHtml($entityObject->getLekarz()->getTytulNaukowy().' '.$entityObject->getLekarz()->getImie()).' '.$this->escapeHtml($entityObject->getLekarz()->getNazwisko()).'</span></h3>
+            ';
             
             
         ?>
