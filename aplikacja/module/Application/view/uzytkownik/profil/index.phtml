@@ -25,6 +25,10 @@
   </div>
   <div class="col-md-6 well">
   <?php 
+  if($user->aktywny != 1){ 
+    echo '<p><span href="" title="" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-exclamation-sign"></span> Konto oczekuje na aktywację. Prosimy zgłosić się do naszej przychodni.</span></p>';
+  }
+  
   echo '<h3 style="margin-top: 0;">'.$this->escapeHtml($user->imie . ' ' . $user->nazwisko).' <a href="" title="" class="btn btn-warning btn-xs">Edytuj</a></h3>
   <dl class="dl-horizontal">';
   echo '<dt><span>PESEL</span></dt><dd> '.$this->escapeHtml($user->pesel).'</dd>';

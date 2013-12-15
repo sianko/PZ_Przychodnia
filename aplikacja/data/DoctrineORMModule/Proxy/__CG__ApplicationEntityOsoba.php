@@ -64,10 +64,10 @@ class Osoba extends \Application\Entity\Osoba implements \Doctrine\ORM\Proxy\Pro
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return array('__isInitialized__', 'id', 'imie', 'nazwisko', 'pesel', 'adres', 'telefon', 'email', 'dataUr', 'plec', 'poziom', 'haslo', 'sol');
+            return array('__isInitialized__', 'id', 'imie', 'nazwisko', 'pesel', 'adres', 'telefon', 'email', 'dataUr', 'plec', 'poziom', 'haslo', 'sol', 'aktywny');
         }
 
-        return array('__isInitialized__', 'id', 'imie', 'nazwisko', 'pesel', 'adres', 'telefon', 'email', 'dataUr', 'plec', 'poziom', 'haslo', 'sol');
+        return array('__isInitialized__', 'id', 'imie', 'nazwisko', 'pesel', 'adres', 'telefon', 'email', 'dataUr', 'plec', 'poziom', 'haslo', 'sol', 'aktywny');
     }
 
     /**
@@ -186,6 +186,17 @@ class Osoba extends \Application\Entity\Osoba implements \Doctrine\ORM\Proxy\Pro
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getId', array());
 
         return parent::getId();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setId($id)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setId', array($id));
+
+        return parent::setId($id);
     }
 
     /**
@@ -428,6 +439,28 @@ class Osoba extends \Application\Entity\Osoba implements \Doctrine\ORM\Proxy\Pro
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSol', array());
 
         return parent::getSol();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setAktywny($aktywny)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setAktywny', array($aktywny));
+
+        return parent::setAktywny($aktywny);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAktywny()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAktywny', array());
+
+        return parent::getAktywny();
     }
 
 }

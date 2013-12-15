@@ -4,6 +4,8 @@ namespace Application\Entity;
 interface OsobaInterface
 {
     public function getId();
+    
+    public function setId($id);
 
     public function setImie($imie);
     
@@ -48,4 +50,8 @@ interface OsobaInterface
     public function setSol($sol);
     
     public function getSol();
+
+    public function setAktywny($aktywny);
+
+    public function getAktywny();
 }

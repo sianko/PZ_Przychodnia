@@ -1,0 +1,149 @@
+<?php
+
+ $title = 'Terminarz: '.$this->l->getImie() . ' ' . $this->l->getNazwisko();
+ $this->headTitle($title);
+ $this->headScript()->appendScript('
+    $(document).ready(function (){
+        $(".tooltip-btn").mouseover(function (e){
+            $(this).tooltip(\'show\');
+        });
+        
+        $(".tooltip-btn").mouseout(function (e){
+            $(this).tooltip(\'hide\');
+        });
+        
+         $(".grafik-open").popover({ html : true});
+        
+        $(".grafik-open").mouseover(function (e){
+            $(this).popover(\'show\');
+        });
+        
+        $(".grafik-open").mouseout(function (e){
+            $(this).popover(\'hide\');
+        });
+        
+    });
+    
+    function wybierzDzien(wybor){
+        $(".konteneryWizyt").hide();
+        $("#wybranyDzien").text(wybor + ".'.$this->miesiac.'.'.$this->rok.'");
+        $("#kontenerWizyta" + wybor).fadeIn();
+    }
+ ');
+ 
+ 
+ ?>
+ 
+     <?php if($this->identity()->poziom == 2){ ?>
+        <p style="clear: both;"></p>
+            <div class="btn-group text-left" style="margin-bottom: 20px;">
+                  <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+                    Wybierz pacjenta <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu">
+                    <?php
+                       foreach($this->pacjenci as $osoba) { 
+                            echo '<li><a href="'.($this->url($this->route, array('oid'=>$osoba->getId()), false, true)).'">'.$this->escapeHtml($osoba->getImie()).' '.$this->escapeHtml($osoba->getNazwisko()). ' [' . $this->escapeHtml($osoba->getPesel()) .']</a></li>';
+                       }
+                    ?>
+                  </ul>
+            </div>
+        
+    <?php } ?>
+ 
+<div class="row">
+    <div class="col-md-3">
+        <p class="alert alert-warning" style="padding: 2px 3px; background: transparent;"><span class="glyphicon glyphicon-ok"></span> wybierz lekarza</p>
+
+        <div style="height: 600px; overflow: auto;">
+            <?php
+                $przelacznikNazwySpec = '';
+                foreach($this->lekarze as $dr){
+                    if($przelacznikNazwySpec !== $dr->getSpec()->getNazwa()){
+                        $przelacznikNazwySpec = $dr->getSpec()->getNazwa();
+                        echo '<h5><span class="glyphicon glyphicon-briefcase"></span> '.$przelacznikNazwySpec.'</h5>';
+                    }
+                    
+                    if($dr === $this->l){
+                        echo '<p class="alert alert-danger" style="padding: 5px 3px; margin: 1px 0;">
+                    <small><small>'.$dr->getTytulNaukowy().'</small></small> '.$dr->getImie().'&nbsp;'.$dr->getNazwisko().'</p>';
+                    } 
+                    else 
+                    {
+                        echo '<p class="alert alert-warning" style="padding: 5px 3px; margin: 2px 0;">
+                    <a href="'.($this->url($this->route, array('did'=>$dr->getLid()), false, true)).'" class="tooltip-btn" data-toggle="tooltip" data-original-title="Kliknij, aby wybrać lekarza." style="color: inherit;"><small><small>'.$dr->getTytulNaukowy().'</small></small> '.$dr->getImie().'&nbsp;'.$dr->getNazwisko().'</a></p>';
+                    }
+                }
+            ?>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <p class="alert alert-info" style="padding: 2px 3px; background: transparent;"><span class="glyphicon glyphicon-ok"></span> określ termin</p>
+    
+         <h3 class="text-center">
+         <?php if((date('m') > $this->miesiac && date('Y') == $this->rok) || date('Y') < $this->rok) { ?>
+         <a href="<?php echo $this->url($this->route, array('category'=> $this->miesiac . ($this->rok - 1)), false, true); ?>" class="btn btn-primary btn-xs tooltip-btn" data-toggle="tooltip" data-original-title="Poprzedni rok"><span class="glyphicon glyphicon-backward"></span></a>
+         
+         <a href="<?php echo $this->url($this->route, array('category'=> ($this->miesiac - 1). $this->rok), false, true); ?>" class="btn btn-primary btn-xs tooltip-btn" data-toggle="tooltip" data-original-title="Poprzedni miesiąc"><span class="glyphicon glyphicon-chevron-left"></span></a>
+         
+         <?php } ?>
+         
+         <span class="label label-primary tooltip-btn" data-toggle="tooltip" data-original-title="Wybrany miesiąc"><?php echo $this->nazwaMiesiaca . ' '.$this->rok; ?></span>
+         
+         <a href="<?php echo $this->url($this->route, array('category'=> ($this->miesiac + 1). $this->rok), false, true); ?>" class="btn btn-primary btn-xs tooltip-btn" data-toggle="tooltip" data-original-title="Następny miesiąc"><span class="glyphicon glyphicon-chevron-right"></span></a>
+         
+        <a href="<?php echo $this->url($this->route, array('category'=> $this->miesiac . ($this->rok + 1)), false, true); ?>" class="btn btn-primary btn-xs tooltip-btn" data-toggle="tooltip" data-original-title="Następny rok"><span class="glyphicon glyphicon-forward"></span></a>
+         
+         </h3>
+    <div style="width: 500px;">
+        <?php
+            
+            
+            $dniTyg = array('pn', 'wt', 'śr', 'cz', 'pt', 'sb', 'nd');
+            
+            foreach($dniTyg as $dt) echo '<div class="label label-primary" style="width: 69px; float: left; margin: 1px;">'.$dt.'</div> ';
+            
+            for($i=1; $i < $this->dzienTygPierwszegoDniaMiesiaca; $i++) echo '<div style="width: 69px; float: left; margin: 1px;"> </div> ';
+            
+            $buforWizyty = '';
+            
+            foreach($this->kalendarz as $key => $d){
+                $label = is_array($this->kalendarz[$key]) && count($this->kalendarz[$key]) > 0 ? true : false;
+                
+                if(!$label){
+                    echo '<div class="btn btn-default tooltip-btn" data-toggle="tooltip" data-original-title="W tym dniu nie można zarejestrować już wizyty." style="width: 69px; float: left; margin: 1px; cursor: default;">'.$key.'</div> ';
+                } else {
+                    echo '<a onclick="wybierzDzien(\''.$key.'\')" class="btn btn-success tooltip-btn" data-toggle="tooltip" data-original-title="Kliknij, aby wybrać godzinę wizyty." style="width: 69px; float: left; margin: 1px;">'.$key.'</a> ';
+                
+                    $buforWizyty .= '<div id="kontenerWizyta'.$key.'" style="display: none; padding: 3px; font-size: 16px;" class="konteneryWizyt">';
+                    
+                    foreach($d as $godz){
+                        for($c = $godz[0]->format('U'); $c < $godz[1]->format('U'); $c += $this->l->getMinutNaPacjenta()*60){
+                            $buforWizyty .= '<p class="panel panel-default" style="margin: 1px 0; padding: 8px 2px;">
+                            <span class="glyphicon glyphicon-time" style="margin: 0 8px 0 10px"></span> '. date('H:i', $c).' 
+                            <a href="'.($this->url($this->route, array('controller' => 'rejestracja', 'action' => 'zapisz-sie', 'id' => date('HidmY',$c), 'did' => $this->l->getLid()), false, true)).'" title="" class="btn btn-success btn-xs" style="margin-left: 35px;"><span class="glyphicon glyphicon-edit"></span> rejestracja</a>
+                            </p>';
+                        }
+                        
+                    }
+                    
+                    $buforWizyty .= '</div>';
+                }   
+            }
+
+        ?>
+        </div>
+        
+
+    
+    </div>
+    <div class="col-md-3">
+    <p class="alert alert-success" style="padding: 2px 3px; background: transparent;"><span class="glyphicon glyphicon-ok"></span> wybierz na godzinę</p>
+    
+    <h3>
+    <span class="label label-default"><span class="glyphicon glyphicon-calendar"></span></span> 
+    <span class="label label-default tooltip-btn" data-toggle="tooltip" data-original-title="Wybrany dzień" id="wybranyDzien">wybierz dzień</span></h3>
+        <?php echo $buforWizyty; ?>
+    </div>
+</div>
+

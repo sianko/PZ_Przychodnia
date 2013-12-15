@@ -192,6 +192,8 @@ class ProfilController extends AbstractActionController
                         $lekarz->setSol($sol);
                         $lekarz->setHaslo($wynik_hash);
                         $msg[2] = $hasloLosowe;
+                        
+                        \Wizyta\Model\Narzedzia::powiadom(array($lekarz), 'Utworzono konto użytkownika <b>'.$lekarz->getImie().' '.$lekarz->getNazwisko().'</b>. <br> Tymczasowe hasło: '. $hasloLosowe . ' (Pamiętaj, aby zmienić je po pierwszym zalogowaniu.). <br><br>Pozdrawiamy', 'Konto zostało utworzone');
                     }
                     
                     $objectManager->persist($lekarz);
@@ -232,6 +234,14 @@ class ProfilController extends AbstractActionController
             } else if($this->identity()->poziom == 1 && $lekarz->getId() != $this->identity()->id){
                 return array('msg' => array(0=>0, 1=>'Nie masz uprawnień do tej operacji.'));
             } else {
+                
+                // Usunięcie powiązanych wizyt w celu zachowania integralności bazy
+                $repo = $objectManager->getRepository('Application\Entity\Wizyta');
+                $powiazaneWizyty = $repo->findBy(array('lekarz' => $lekarz->getLid()));
+                foreach($powiazaneWizyty as $powiazana){
+                    $objectManager->remove($powiazana);
+                }
+                
                 $objectManager->remove($lekarz);
                 $objectManager->flush();
                 return array('msg' => array(0=>1, 1=>'Usunięto pomyślnie.'));
@@ -261,7 +271,29 @@ class ProfilController extends AbstractActionController
         
         $request = $this->getRequest();
         if (!$request->isPost()) {
+        
+            if($this->identity()->poziom == 2){
+            $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+            $repo = $objectManager->getRepository('Application\Entity\Lekarz');
+            $lekarze = $repo->findAll();
+            
+            if($get_id > 0){
+            
+                foreach($lekarze as $dr){
+                    if($dr->getLid() == $get_id){ 
+                        $wybranyLekarz = $dr; 
+                        break;
+                    }
+                }
+                
+            return array('form' => $form, 'lekarze' => $lekarze, 'wybranyLekarz' => $wybranyLekarz);
+            }
+            
+            return array('form' => $form, 'lekarze' => $lekarze);
+            }
+            
             return array('form' => $form);
+            
         } else {
             $form->setData($request->getPost());
             if ($form->isValid()) {
@@ -287,14 +319,16 @@ class ProfilController extends AbstractActionController
                         
                         if($get_id > 0){
                            $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-                           $pobranyLekarz = $objectManager->find('Application\Entity\Osoba', $get_id);
+                           $pobranyLekarz = $objectManager->find('Application\Entity\Lekarz', $get_id);
+                        } else {
+                            return array('msg' => array(0=>0, 1=>'Trzeba wybrać lekarza.'));
                         }
                     }
                     
                     \Wizyta\Model\Narzedzia::odwolajWizyte($this, array($data_od, $data_do), $powiadomienie, $pobranyLekarz);
                     
                     // Użytkownik o id = 1, jest użytkownikiem "systemowym", na którego nie można się zalogować.
-                    \Wizyta\Controller\RejestracjaController::zapiszNaWizyte($this, $data_od, 1, $this->identity()->id, false, false, $roznicaCzasu, true);
+                    \Wizyta\Controller\RejestracjaController::zapiszNaWizyte($this, $data_od, 1, $pobranyLekarz == null ? $this->identity()->id : $pobranyLekarz->getLid(), false, false, $roznicaCzasu, true);
                 
                     return array('msg' => array(0=>1, 1=>'Dodano informację o nieobecności ' . ($powiadomienie ? ' oraz poinformowano pacjentów o zmianach.' : '.')));  
                 

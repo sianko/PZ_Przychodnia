@@ -9,8 +9,8 @@
             echo $this->translate($this->escapeHtml($msg)).'<br />';
         }
         echo '</div>';
-    } else if(isset($this->pokazKomunikat) && $this->pokazKomunikat){
-        echo '<div class="alert alert-warning">Dostęp do tej części strony wymaga zalogowania. Nie masz konta? <a href="'.$this->url('uzytkownik', array('controller' => 'rejestracja')).'">Zarejestruj się</a></div>';
+    } else if(isset($this->pokazKomunikat) && $this->pokazKomunikat !== false){
+        echo $this->pokazKomunikat;
     }
     
 

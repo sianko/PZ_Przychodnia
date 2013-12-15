@@ -98,6 +98,14 @@ class Osoba implements OsobaInterface
      */
     private $sol;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="aktywny", type="integer", nullable=false)
+     */
+    private $aktywny = '0';    
+    
+    
 
 
     /**
@@ -108,6 +116,18 @@ class Osoba implements OsobaInterface
     public function getId()
     {
         return $this->id;
+    }
+    
+    /**
+     * Set id
+     *
+     * @param integer 
+     * @return Osoba
+     */
+    public function setId($id)
+    {
+        $this->id = intval($id);
+        return $this;
     }
 
     /**
@@ -362,4 +382,30 @@ class Osoba implements OsobaInterface
     {
         return $this->sol;
     }
+    
+    
+    /**
+     * Set aktywny
+     *
+     * @param integer $aktywny
+     * @return Osoba
+     */
+    public function setAktywny($aktywny)
+    {
+        $this->aktywny = $aktywny == 1 ? 1 : 0;
+
+        return $this;
+    }
+
+    /**
+     * Get aktywny
+     *
+     * @return integer 
+     */
+    public function getAktywny()
+    {
+        return $this->aktywny;
+    }    
+    
+    
 }

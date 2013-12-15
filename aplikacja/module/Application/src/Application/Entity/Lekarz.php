@@ -73,6 +73,18 @@ class Lekarz implements OsobaInterface
     {
         return $this->lid;
     }
+    
+    /**
+     * Set lid
+     *
+     * @param integer 
+     * @return Lekarz
+     */
+    public function setLid($id)
+    {
+        $this->lid = intval($id);
+        return $this;
+    }
 
     /**
      * Set tytulNaukowy
@@ -249,6 +261,18 @@ class Lekarz implements OsobaInterface
     public function getId()
     {
         return  $this->getOs()->getId();
+    }
+    
+    /**
+     * Set id
+     *
+     * @param integer 
+     * @return Lekarz
+     */
+    public function setId($id)
+    {
+        $this->getOs()->setId($id);
+        return $this;
     }
 
     /**
@@ -503,5 +527,29 @@ class Lekarz implements OsobaInterface
     {
         return $this->getOs()->getSol();
     }
+    
+    
+    /**
+     * Set aktywny
+     *
+     * @param integer $aktywny
+     * @return Lekarz
+     */
+    public function setAktywny($aktywny)
+    {
+        $this->getOs()->setAktywny($aktywny);
+
+        return $this;
+    }
+
+    /**
+     * Get aktywny
+     *
+     * @return integer 
+     */
+    public function getAktywny()
+    {
+        return $this->getOs()->getAktywny();
+    }  
     
 }

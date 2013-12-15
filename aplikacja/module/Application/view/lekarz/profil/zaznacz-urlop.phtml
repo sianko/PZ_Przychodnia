@@ -10,7 +10,33 @@
     });
     ');
  
-    echo '<h1>'.$tytul.'</h1>';
+ 
+    echo '<div class="text-left" style="float: right; width: 200px;">';
+    if($this->identity()->poziom == 2 && isset($this->lekarze)) {
+    ?>
+    
+    <div class="btn-group text-left" style="margin-top: 5px;">
+          <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+            Wybierz lekarza <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <?php
+               foreach($this->lekarze as $osoba) { 
+                    echo '<li><a href="'.($this->url($this->route, array('id'=>$osoba->getLid()), false, true)).'">'.$this->escapeHtml($osoba->getImie()).' '.$this->escapeHtml($osoba->getNazwisko()). ' [' . $this->escapeHtml($osoba->getSpec()->getNazwa()) .']</a></li>';
+               }
+            ?>
+          </ul>
+        </div>
+    
+    <?php
+        if(isset($this->wybranyLekarz)){ 
+            $tytul .= ' <small>'.$this->wybranyLekarz->getNazwisko().' '.substr($this->wybranyLekarz->getImie(), 0, 1).'.</small>'; 
+        } else {
+            $tytul .= ' <small>wybierz lekarza</small>'; 
+        }
+            
+    }
+    echo '</div><h1>'.$tytul.'</h1>';
     echo '<div style="width: 560px; margin: 0 auto;">';
     
     if(isset($this->form))

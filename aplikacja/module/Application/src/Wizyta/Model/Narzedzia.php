@@ -36,8 +36,8 @@ class Narzedzia
         }
         
         $message = '
-                <p style="color: #00A3D9; font-weight: bold; border-bottom: 1px solid #00A3D9;">&lsaquo; Dzień dobry, Wirtualna Przychodnia informuje:</p>
-                <div style="padding-left: 10px; background: #BFDFFF;">
+                <p style="color: #00A3D9; font-weight: bold; border-bottom: 1px solid #00A3D9;">&lsaquo; Dzień dobry, Wirtualna Przychodnia uprzejmie informuje:</p>
+                <div style="padding-left: 10px;">
                 '.$wiadomosc.'
                 </div>
                 <p style="color: #00A3D9; font-weight: bold; border-top: 1px solid #00A3D9; font-size: 9px; font-style: italic;">Wirtualna Przychodnia<br />tel. 452 456 842<br />fax. 484 125 458<br />www: wp.med.pl</p>
@@ -79,7 +79,7 @@ class Narzedzia
         
         $objectManager = $context->getServiceLocator()->get('Doctrine\ORM\EntityManager');
         $repository = $objectManager->getRepository('Application\Entity\Wizyta');
-        $queryBuilder = $repository->createQueryBuilder('Application\Entity\Wizyta');
+        $queryBuilder = $repository->createQueryBuilder('wz');
         $alias = $queryBuilder->getRootAlias();
         
         //$queryBuilder->select($queryBuilder->getRootAlias()'');
@@ -99,6 +99,9 @@ class Narzedzia
         
         // Analiza wszystkich wizyt z bazy z określonego miesiąca
         foreach($wynik as $w){
+        
+            if($w->getStatus() > 0) continue; // jeżeli wizyta została odwołana, traktujemy ją jakby jej nie było
+            
             $indeks = $w->getData()->format('Y-m-d');
             $numerDnia = $w->getData()->format('j');
             
@@ -238,6 +241,8 @@ class Narzedzia
             }
             
         } else if($this->identity()->poziom == 2) {
+        
+            if($odwoluje === null) return false;
             $os = $odwoluje;
             $nowyStatusWizyty = intval($os->getPoziom())+1;
             
@@ -321,4 +326,32 @@ class Narzedzia
     }
     
     
+    public static function nazwaMiesiaca($nr, $mianownik = true){
+        switch (intval($nr)){
+            case 1 : return $mianownik ? 'styczeń' : 'stycznia';
+            case 2 : return $mianownik ? 'luty' : 'lutego';
+            case 3 : return $mianownik ? 'marzec' : 'marca';
+            case 4 : return $mianownik ? 'kwiecień' : 'kwietnia';
+            case 5 : return $mianownik ? 'maj' : 'maja';
+            case 6 : return $mianownik ? 'czerwiec' : 'czerwca';
+            case 7 : return $mianownik ? 'lipiec' : 'lipca';
+            case 8 : return $mianownik ? 'sierpień' : 'sierpnia';
+            case 9 : return $mianownik ? 'wrzesień' : 'września';
+            case 10 : return $mianownik ? 'październik' : 'października';
+            case 11 : return $mianownik ? 'listopad' : 'listopada';
+            case 12 : return $mianownik ? 'grudzień' : 'grudnia';
+        }
+    }
+    
+    public static function nazwaDnia($nr){
+        switch (intval($nr)){
+            case 1 : return 'poniedziałek';
+            case 2 : return 'wtorek';
+            case 3 : return 'środa';
+            case 4 : return 'czwartek';
+            case 5 : return 'piątek';
+            case 6 : return 'sobota';
+            case 7 : return 'niedziela';
+        }
+    }
 }

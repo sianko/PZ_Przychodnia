@@ -191,6 +191,17 @@ class Lekarz extends \Application\Entity\Lekarz implements \Doctrine\ORM\Proxy\P
     /**
      * {@inheritDoc}
      */
+    public function setLid($id)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setLid', array($id));
+
+        return parent::setLid($id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setTytulNaukowy($tytulNaukowy)
     {
 
@@ -329,6 +340,17 @@ class Lekarz extends \Application\Entity\Lekarz implements \Doctrine\ORM\Proxy\P
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getId', array());
 
         return parent::getId();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setId($id)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setId', array($id));
+
+        return parent::setId($id);
     }
 
     /**
@@ -571,6 +593,28 @@ class Lekarz extends \Application\Entity\Lekarz implements \Doctrine\ORM\Proxy\P
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'getSol', array());
 
         return parent::getSol();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setAktywny($aktywny)
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'setAktywny', array($aktywny));
+
+        return parent::setAktywny($aktywny);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAktywny()
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getAktywny', array());
+
+        return parent::getAktywny();
     }
 
 }

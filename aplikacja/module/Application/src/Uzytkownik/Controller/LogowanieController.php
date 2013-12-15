@@ -78,23 +78,28 @@ class LogowanieController extends AbstractActionController
                                 $sessionManager->rememberMe($time);
                             }
                             
-                            return $this->redirect()->toRoute('uzytkownik', array('controller' => 'profil'));	
                             
+                            return $this->redirect()->toRoute('uzytkownik', array('controller' => 'profil'));	
+                           
                             break;
 
-                        default:
-                            // do stuff for other failure
-                            break;
+                      
                     }				
                    		
                  }
             }
+        } else if($user->aktywny != 1){
+        
+            $pokazKomunikat = '<div class="alert alert-danger"><b>Uwaga</b> Konto nie zostało jeszcze aktywowane. Aby aktywować konto, trzeba zgłosić się do Recepcji w naszej przychodni, w celu weryfikacji danych.<br /><i>Przepraszamy za utrudnienia!</i></div>';
+            return array('pokazKomunikat' => $pokazKomunikat);
+
         } else return $this->redirect()->toRoute('uzytkownik', array('controller' => 'profil'));
         
-            $get_id = (int)$this->params()->fromRoute('id', 0);
-            $pokazKomunikat = $get_id === 1 ? true : false;  
-            
-            return array('form' => $form, 'result' => $result, 'pokazKomunikat' => $pokazKomunikat);
+        $get_id = (int)$this->params()->fromRoute('id', 0);
+        $url = $this->url()->fromRoute('uzytkownik', array('controller' => 'rejestracja'));
+        $pokazKomunikat = $get_id === 1 ? '<div class="alert alert-warning">Dostęp do tej części strony wymaga zalogowania. Nie masz konta? <a href="'.$url.'">Zarejestruj się</a></div>' : false;  
+        
+        return array('form' => $form, 'result' => $result, 'pokazKomunikat' => $pokazKomunikat);
             
     }
     
