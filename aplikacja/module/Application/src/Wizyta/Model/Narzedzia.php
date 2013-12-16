@@ -25,7 +25,11 @@ class Narzedzia
     {
         foreach($adresaci as $osoba)
         {
-            $emails[] = $osoba->getEmail();
+            if($osoba instanceof \Application\Entity\OsobaInterface){
+                $emails[] = $osoba->getEmail();
+            } else {
+                $emails[] = $osoba;
+            }
         }
         
         $recipents = implode(', ', $emails);
