@@ -18,7 +18,7 @@
    <table class="table table-striped table-condensed alert alert-info">
    <thead>
    <tr>
-   <th>Lp.</th><th>Imię</th><th>Nazwisko</th><th>PESEL</th><th>Data ur.</th><th>Adres</th><th>E-mail</th><th>Telefon</th><th>Poziom</th><th>Zarządzanie</th>
+   <th>Lp.</th><th>Imię</th><th>Nazwisko</th><th>PESEL</th><th>Data ur.</th><th>Adres</th><th>E-mail</th><th>Tel.</th><th>Poziom</th><th>Zarządzanie</th>
    </tr>
    </thead>
    <tbody>
@@ -27,7 +27,38 @@
     foreach($this->all as $entityObject) :
    ?>
 
-    <?php echo '<tr><td><span class="label label-'.($entityObject->getPlec() == 'K' ? 'danger">' :  'info">').($lp++).'</span></td><td>'.$this->escapeHtml($entityObject->getImie()).'</td><td>'.$this->escapeHtml($entityObject->getNazwisko()).'</td><td>'.$this->escapeHtml($entityObject->getPesel()).'</td><td>'.$entityObject->getDataUr()->format('j.m.Y').'</td><td>'.$this->escapeHtml($entityObject->getAdres()).'</td><td>'.$this->escapeHtml($entityObject->getEmail()).'</td><td>'.$this->escapeHtml($entityObject->getTelefon()).'</td><td><span class="label label-'.($entityObject->getPoziom() == 2 ? 'danger">admin' : ($entityObject->getPoziom() == 1 ? 'success">lekarz' : 'info">pacjent')).'</span></td><td><a class="glyphicon glyphicon-list-alt btn btn-success btn-xs tooltip-btn" data-toggle="tooltip" title="" data-original-title="Wyświetl wizyty"></a> <a class="glyphicon glyphicon-wrench btn btn-primary btn-xs tooltip-btn" data-toggle="tooltip" title="" data-original-title="Edytuj"></a> <a class="glyphicon glyphicon-trash btn btn-warning btn-xs tooltip-btn" data-toggle="tooltip" title="" data-original-title="Usuń"></a></td></tr>'; ?>
+    <?php 
+    $telefon = $entityObject->getTelefon();
+
+    
+    echo '<tr><td><span class="label label-'.($entityObject->getAktywny() != 1 ? 'danger">' :  'info">').($lp++).'</span></td><td>'.$this->escapeHtml($entityObject->getImie()).'</td><td>'.$this->escapeHtml($entityObject->getNazwisko()).'</td><td>'.$this->escapeHtml($entityObject->getPesel()).'</td><td>'.$entityObject->getDataUr()->format('j.m.Y').'</td><td class="text-center"><span class="glyphicon glyphicon-comment tooltip-btn" data-toggle="tooltip" title="" data-original-title="'.$this->escapeHtml($entityObject->getAdres()).'"></span></td><td class="text-center"><small>'.$this->escapeHtml($entityObject->getEmail()).'</small></td><td class="text-center">'.(empty($telefon) ? '' : '<span class="glyphicon glyphicon-phone-alt tooltip-btn" data-toggle="tooltip" title="" data-original-title="'.$this->escapeHtml($telefon).'"></span>').'</td><td><span class="label label-'.($entityObject->getPoziom() == 2 ? 'danger">admin' : ($entityObject->getPoziom() == 1 ? 'success">lekarz' : 'info">pacjent')).'</span></td>
+    <td class="text-right">
+    '.($entityObject->getAktywny() != 1 ? '<a href="'.$this->url('uzytkownik', array('controller' => 'index', 'action' => 'aktywuj', 'id' => $entityObject->getId())).'"  class="glyphicon glyphicon-ok btn btn-success btn-xs tooltip-btn" data-toggle="tooltip" title="" data-original-title="Aktywuj" style="padding: 3px 6px;"></a>' : '').'
+    
+    <a href="'.$this->url('wizyta', array('oid' => $entityObject->getId())).'" class="glyphicon glyphicon-list-alt btn btn-default btn-xs tooltip-btn" data-toggle="tooltip" title="" data-original-title="Wyświetl wizyty" style="padding: 3px 6px;"></a> 
+    
+    <a class="glyphicon glyphicon-wrench btn btn-primary btn-xs tooltip-btn" data-toggle="tooltip" title="" style="padding: 3px 6px;" data-original-title="Edytuj"></a>
+     
+    <a href="'.$this->url('uzytkownik', array('controller' => 'index', 'action' => 'usun', 'id' => $entityObject->getId())).'"  class="glyphicon glyphicon-trash btn btn-danger btn-xs tooltip-btn" data-toggle="tooltip" title="" style="padding: 3px 6px;" data-original-title="Usuń"></a>
+   
+    
+    <div class="btn-group">
+       <button type="button" class="btn btn-warning btn-xs dropdown-toggle" data-toggle="dropdown" style="padding: 0 6px;">
+       <span class="glyphicon glyphicon-sort tooltip-btn" data-toggle="tooltip" title="" data-original-title="Zmień poziom użytkownika" style="margin: 0; margin-bottom: -1px; padding: 0;"></span>
+       </button>
+      <ul class="dropdown-menu" role="menu">
+        <li> <a href="'.$this->url('uzytkownik', array('controller' => 'index', 'action' => 'zmien-poziom', 'id' => $entityObject->getId(), 'page' => 0)).'"  class="tooltip-btn" data-toggle="tooltip" title="" data-original-title="Poziom 0.">Pacjent</a></li>
+        
+        <li> <a href="'.$this->url('uzytkownik', array('controller' => 'index', 'action' => 'zmien-poziom', 'id' => $entityObject->getId(), 'page' => 1)).'"  class="tooltip-btn" data-toggle="tooltip" title="" data-original-title="Poziom 1.">Lekarz</a></li>
+
+        <li> <a href="'.$this->url('uzytkownik', array('controller' => 'index', 'action' => 'zmien-poziom', 'id' => $entityObject->getId(), 'page' => 2)).'"  class="tooltip-btn" data-toggle="tooltip" title="" data-original-title="Poziom 2.">Recepcja</a></li>
+        
+      </ul>
+    </div>
+    
+    
+    
+    </td></tr>'; ?>
     
    <?php
     endforeach;

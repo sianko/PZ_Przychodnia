@@ -24,7 +24,23 @@ class IndexController extends AbstractActionController
             
             if(!$this->identity()) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie', 'id' => 1));
             
-            if($this->identity()->poziom == 0){
+            if(intval($this->identity()->poziom) === 2 && $get_oid > 0){
+                $os = $objectManager->find('Application\Entity\Osoba', $get_oid);
+                
+                if($os->getPoziom() == 1){
+                    
+                    $repo = $objectManager->getRepository('Application\Entity\Lekarz');
+                    $queryBuilder = $repo->createQueryBuilder('dr');
+                    $queryBuilder->where($queryBuilder->getRootAlias().'.os = '.$get_oid);
+                    $q = $queryBuilder->getQuery();
+                    
+                    $lek = $q->execute();
+                    $get_did = $lek[0]->getLid();
+                    
+                    return $this->redirect()->toRoute('wizyta', array('did' => $get_did));
+                }
+                
+            } else if($this->identity()->poziom == 0){
                 $get_oid = $this->identity()->id;
                 $get_did = 0;
             } else if($get_did > 0 && intval($this->identity()->poziom) === 1){

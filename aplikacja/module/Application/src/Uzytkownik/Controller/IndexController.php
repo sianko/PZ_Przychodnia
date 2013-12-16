@@ -15,12 +15,15 @@ class IndexController extends AbstractActionController
     
     public function indexAction()
     {
-        if(!$this->identity() || $this->identity()->poziom != 2) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie'));
+        if(!$this->identity() || $this->identity()->poziom != 2) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie', 'id' => 1));
         else {
             $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
             $repository = $objectManager->getRepository('Application\Entity\Osoba');
-            $queryBuilder = $repository->createQueryBuilder('Application\Entity\Osoba');
+            $queryBuilder = $repository->createQueryBuilder('os');
+           
+            $queryBuilder->orderBy($queryBuilder->getRootAlias().'.aktywny', 'ASC');
+            $queryBuilder->addOrderBy($queryBuilder->getRootAlias().'.nazwisko', 'ASC');
            
             $query = $queryBuilder->getQuery();
 
@@ -33,6 +36,51 @@ class IndexController extends AbstractActionController
         }
     }
     
+    
+    public function zmienPoziomAction()
+    {
+        if(!$this->identity() || $this->identity()->poziom != 2) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie', 'id' => 1));
+        
+        else {
+            $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+
+            $get_id = (int)$this->params()->fromRoute('id', 0);
+            $get_page = (int)$this->params()->fromRoute('page', 2);
+            
+            if($get_page != 0 || $get_page != 1 || $get_page != 2) $get_page = 0; 
+            
+            $o = $objectManager->find('Application\Entity\Osoba', $get_id);
+            if($o instanceof \Application\Entity\Osoba){
+                $o->setPoziom($get_page);
+                $objectManager->persist($o);
+                $objectManager->flush();
+            }
+            
+            return $this->redirect()->toRoute('uzytkownik', array('controller' => 'index'));
+        }
+    }
+  
+    public function aktywujAction()
+    {
+        if(!$this->identity() || $this->identity()->poziom != 2) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie', 'id' => 1));
+        
+        else {
+            $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+
+            $get_id = (int)$this->params()->fromRoute('id', 0);
+            
+            $o = $objectManager->find('Application\Entity\Osoba', $get_id);
+            if($o instanceof \Application\Entity\Osoba){
+                $o->setAktywny(1);
+                $objectManager->persist($o);
+                $objectManager->flush();
+            }
+            
+            return $this->redirect()->toRoute('uzytkownik', array('controller' => 'index'));
+        }
+    }
+
+  
     public function listaOsobSkroconaAction(){
         $get_id = 0;
         
