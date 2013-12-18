@@ -251,8 +251,17 @@ return array(
     'console' => array(
         'router' => array(
             'routes' => array(
-            ),
-        ),
+                'przypomnienia' => array(
+                    'options' => array(
+                        'route'    => 'przypomnienia',
+                        'defaults' => array(
+                            'controller' => 'Wizyta\Controller\Cron',
+                            'action'     => 'wykonaj-zadanie'
+                        )
+                    )
+                )
+            )
+        )
     ),
     
     // Doctrine config
