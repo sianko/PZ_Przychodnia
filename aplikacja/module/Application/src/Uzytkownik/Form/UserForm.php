@@ -1,5 +1,5 @@
 <?php
-namespace Auth\Form;
+namespace Uzytkownik\Form;
 
 use Zend\Form\Form;
 
@@ -7,156 +7,151 @@ class UserForm extends Form
 {
     public function __construct($name = null)
     {
-        parent::__construct('registration');
+        parent::__construct('rejestracja');
         $this->setAttribute('method', 'post');
-
+        $this->setAttribute('class', 'form-inline'); //form-inline jest z bootsratapa
+        
+              
         $this->add(array(
-            'name' => 'usr_name',
+            'name' => 'imie',
             'attributes' => array(
                 'type'  => 'text',
-            ),
-            'options' => array(
-                'label' => 'Username',
+                'class' => 'form-control',
             ),
         ));
-		
+        
         $this->add(array(
-            'name' => 'usr_password',
+            'name' => 'nazwisko',
             'attributes' => array(
-                'type'  => 'password',
+                'type'  => 'text',
+                'class' => 'form-control',
             ),
-            'options' => array(
-                'label' => 'Password',
-            ),
-        ));
-
+        ));   
+        
         $this->add(array(
-            'name' => 'usr_email',
+            'name' => 'pesel',
+            'attributes' => array(
+                'type'  => 'text',
+                'class' => 'form-control',
+                'style' => 'width: 250px;',
+            ),
+        ));         
+       
+        $this->add(array(
+            'name' => 'email',
             'attributes' => array(
                 'type'  => 'email',
-            ),
-            'options' => array(
-                'label' => 'E-mail',
+                'class' => 'form-control',
             ),
         ));	
-
+        
         $this->add(array(
-            'name' => 'usrl_id',
+            'name' => 'telefon',
+            'attributes' => array(
+                'type'  => 'text',
+                'class' => 'form-control',
+            ),
+        ));   
+        
+        $this->add(array(
+            'name' => 'adres',
+            'attributes' => array(
+                'type'  => 'text',
+                'class' => 'form-control',
+            ),
+        ));
+        
+        for($i=1; $i<=31; $i++)
+        {
+            $dni[$i] = $i;
+        }
+        
+        for($i=1; $i<=12; $i++)
+        {
+            $msc[$i] = $i;
+        }
+        
+        for($i=1900; $i<=date('Y'); $i++)
+        {
+            $rok[$i] = $i;
+        }
+        
+               
+        $this->add(array(
+            'name' => 'data_ur_dd',
 			'type' => 'Zend\Form\Element\Select',
             'options' => array(
-                'label' => 'Role',
-				'value_options' => array(
-					'1' => 'Public',
-					'2' => 'Member',
-					'3' => 'Admin',
-				),
+				'value_options' => $dni,
             ),
-        ));	
-
+            'attributes' => array(
+                'class' => 'form-control',
+                'style' => 'width: 75px;'
+            )
+        ));
+        
         $this->add(array(
-            'name' => 'lng_id',
+            'name' => 'data_ur_mm',
 			'type' => 'Zend\Form\Element\Select',
             'options' => array(
-                'label' => 'Language',
-				'value_options' => array(
-					'1' => 'English',
-					'2' => 'French',
-					'3' => 'German',
-				),
+				'value_options' => $msc,
             ),
+            'attributes' => array(
+                'class' => 'form-control',
+                'style' => 'width: 75px;'
+            )
         ));
-		
+        
         $this->add(array(
-            'name' => 'usr_active',
+            'name' => 'data_ur_rr',
 			'type' => 'Zend\Form\Element\Select',
             'options' => array(
-                'label' => 'Active',
-				'value_options' => array(
-					'0' => 'No',
-					'1' => 'Yes',
-				),
+				'value_options' => $rok,
             ),
+            'attributes' => array(
+                'class' => 'form-control',
+                'style' => 'width: 100px;'
+            )
         ));
-
+        
         $this->add(array(
-            'name' => 'usr_question',
-            'attributes' => array(
-                'type'  => 'text',
-            ),
-            'options' => array(
-                'label' => 'Question',
-            ),
-        ));
-
-        $this->add(array(
-            'name' => 'usr_answer',
-            'attributes' => array(
-                'type'  => 'text',
-            ),
-            'options' => array(
-                'label' => 'Answer',
-            ),
-        ));
-		
-        $this->add(array(
-            'name' => 'usr_picture',
-            'attributes' => array(
-                'type'  => 'text',
-            ),
-            'options' => array(
-                'label' => 'Picture URL',
-            ),
-        ));
-		
-        $this->add(array(
-            'name' => 'usr_password_salt',
-            'attributes' => array(
-                'type'  => 'text',
-            ),
-            'options' => array(
-                'label' => 'Password Salt',
-            ),
-        ));
-		
-        $this->add(array(
-            'name' => 'usr_registration_date',
-            'attributes' => array(
-                'type'  => 'text',
-            ),
-            'options' => array(
-                'label' => 'Registration Date',
-            ),
-        ));	
-
-        $this->add(array(
-            'name' => 'usr_registration_token',
-            'attributes' => array(
-                'type'  => 'text',
-            ),
-            'options' => array(
-                'label' => 'Registration Token',
-            ),
-        ));			
-
-        $this->add(array(
-            'name' => 'usr_email_confirmed',
+            'name' => 'plec',
 			'type' => 'Zend\Form\Element\Select',
             'options' => array(
-                'label' => 'E-mail was confirmed?',
 				'value_options' => array(
-					'0' => 'No',
-					'1' => 'Yes',
+					'M' => 'mężczyzna',
+                    'K' => 'kobieta'
 				),
             ),
+            'attributes' => array(
+                'class' => 'form-control',
+                'style' => 'width: 250px;',
+            )
         ));
 		
         $this->add(array(
             'name' => 'submit',
             'attributes' => array(
                 'type'  => 'submit',
-                'value' => 'Go',
+                'value' => 'Zapisz',
+                'class' => 'btn btn-primary',
                 'id' => 'submitbutton',
             ),
-        )); 
+        ));
+		
+		$this->add(array(
+            'name' => 'haslo',
+            'attributes' => array(
+                'type'  => 'password',
+                'class' => 'form-control',
+              ),
+        ));
+		
+		$this->add(array(
+            'name' => 'haslo_powt',
+            'attributes' => array(
+                'type'  => 'password',
+                'class' => 'form-control',
+              ),
+        ));
     }
 }
