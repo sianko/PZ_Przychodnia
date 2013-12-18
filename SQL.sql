@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Czas wygenerowania: 05 Gru 2013, 20:04
+-- Czas wygenerowania: 18 Gru 2013, 10:43
 -- Wersja serwera: 5.5.24-log
 -- Wersja PHP: 5.3.13
 
@@ -30,17 +30,19 @@ CREATE TABLE IF NOT EXISTS `lekarze` (
   PRIMARY KEY (`id`),
   KEY `fk_lekarze_spec` (`spec_id`),
   KEY `fk_lekarze_os` (`os_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
 
 --
 -- Zrzut danych tabeli `lekarze`
 --
 
 INSERT INTO `lekarze` (`id`, `os_id`, `spec_id`, `tytul_naukowy`, `grafik`, `minut_na_pacjenta`) VALUES
-(2, 5, 100, 'mgr', '8.00-16.00%8.00-16.00%8.00-16.00%8.00-16.00%8.00-16.00%%', 20),
-(3, 6, 83, 'prof. dr hab.', '%14.00-17.30%%%%%', 60),
-(6, 3, 70, 'prof.', '%%%%%%', 35),
-(7, 6, 76, 'prof.', '%%%%%%', 30);
+(2, 5, 100, 'mgr', '8:00-16:00%8:00-16:00%8:00-16:00%8:00-16:00%8:00-16:00%%', 20),
+(3, 6, 83, 'prof. dr hab.', '%14:00-17:30%%%%%', 60),
+(6, 3, 70, 'prof.', '8:00-12:00%%8:00-10:00%8:00-10:00%%%', 35),
+(7, 6, 76, 'prof.', '%%%%%%', 30),
+(9, 8, 71, 'prof.', '%%7:00-15:00%%%%', 40),
+(10, 9, 100, 'mgr', '8:00-18:00%13:00-18:00%13:00-18:00%13:00-18:00%13:00-18:00%%', 20);
 
 -- --------------------------------------------------------
 
@@ -61,21 +63,25 @@ CREATE TABLE IF NOT EXISTS `osoby` (
   `poziom` tinyint(1) NOT NULL DEFAULT '0',
   `haslo` varchar(60) NOT NULL,
   `sol` varchar(16) NOT NULL,
+  `aktywny` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `pesel` (`pesel`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
 
 --
 -- Zrzut danych tabeli `osoby`
 --
 
-INSERT INTO `osoby` (`id`, `imie`, `nazwisko`, `pesel`, `adres`, `telefon`, `email`, `data_ur`, `plec`, `poziom`, `haslo`, `sol`) VALUES
-(1, 'Anonim', 'Noname', '00000000000', 'nie dotyczy', NULL, 'no-reply@przychodnia.url.ph', '1960-01-01', 'M', 0, '$2y$06$54fsd4654df8ewr54wr864f6sdf841ds154f648444646611055df', 'f8ao3G@L3gKeE0t6'),
-(2, 'Jan', 'Kowalski', '99999999999', '99-999 Warszawa, ul. Inna 215', '48123456789', 'siankotm@gmail.com', '1995-02-26', 'M', 0, '$2y$06$ZjhhbzNHQEwzZ0tlRTB0NebSkSatM/2AeppP5kBYV0v/zl8DVkMdO', 'f8ao3G@L3gKeE0t6'),
-(3, 'Agata', 'Pogodna', '11111111111', '99-999 Warszawa, ul. Wysoka 23', '', 'agata.pogodna@no-mail.pl', '1995-02-26', 'K', 1, '$2y$06$ZjhhbzNHQEwzZ0tlRTB0NebSkSatM/2AeppP5kBYV0v/zl8DVkMdO', 'f8ao3G@L3gKeE0t6'),
-(4, 'Grzegorz', 'Szamburski', '22222222222', '99-999 Miasto, ul. Nowa 1', NULL, 'siankotm@gmail.com', '1992-02-01', 'M', 2, '$2y$06$ZjhhbzNHQEwzZ0tlRTB0NebSkSatM/2AeppP5kBYV0v/zl8DVkMdO', 'f8ao3G@L3gKeE0t6'),
-(5, 'Julia', 'Nowakowska', '33333333333', '99-999 Warszawa, ul. Wysoka 23', '', 'dr.nowakowska@no-mail.pl', '1984-08-15', 'K', 1, '$2y$06$OXQjYllabj9iZEM/IUhpde8Z4IwB.YQwyRNMfmkf9v6BHvosPJgh6', '9t#bYZn?bdC?!Hiv'),
-(6, 'Tomasz', 'Okulski', '55555555555', '99-999 Warszawa, ul. Wysoka 1', '', 'okulski.t@no-mail.pl', '1953-12-01', 'M', 1, '$2y$06$TzlGVHBAdlpARkhyJFlASOfRjqkXlZQDTXEeer9K057nxZKkM.gyq', 'O9FTp@vZ@FHr$Y@I');
+INSERT INTO `osoby` (`id`, `imie`, `nazwisko`, `pesel`, `adres`, `telefon`, `email`, `data_ur`, `plec`, `poziom`, `haslo`, `sol`, `aktywny`) VALUES
+(1, 'Anonim', 'Noname', '00000000000', 'nie dotyczy', NULL, 'no-reply@przychodnia.url.ph', '1960-01-01', 'M', 0, '$2y$06$54fsd4654df8ewr54wr864f6sdf841ds154f648444646611055df', 'f8ao3G@L3gKeE0t6', 1),
+(2, 'Jan', 'Kowalski', '99999999999', '99-999 Warszawa, ul. Inna 215', '48123456789', 'siankotm+jk@gmail.com', '1995-02-26', 'M', 0, '$2y$06$ZjhhbzNHQEwzZ0tlRTB0NebSkSatM/2AeppP5kBYV0v/zl8DVkMdO', 'f8ao3G@L3gKeE0t6', 1),
+(3, 'Agata', 'Pogodna', '11111111111', '99-999 Warszawa, ul. Wysoka 23', '', 'siankotm+ap@gmail.com', '1995-02-26', 'K', 1, '$2y$06$ZjhhbzNHQEwzZ0tlRTB0NebSkSatM/2AeppP5kBYV0v/zl8DVkMdO', 'f8ao3G@L3gKeE0t6', 1),
+(4, 'Grzegorz', 'Szamburski', '22222222222', '99-999 Miasto, ul. Nowa 1', NULL, 'siankotm@gmail.com', '1992-02-01', 'M', 2, '$2y$06$ZjhhbzNHQEwzZ0tlRTB0NebSkSatM/2AeppP5kBYV0v/zl8DVkMdO', 'f8ao3G@L3gKeE0t6', 1),
+(5, 'Julia', 'Nowakowska', '33333333333', '99-999 Warszawa, ul. Wysoka 23', '', 'siankotm+jn@gmail.com', '1984-08-15', 'K', 1, '$2y$06$OXQjYllabj9iZEM/IUhpde8Z4IwB.YQwyRNMfmkf9v6BHvosPJgh6', '9t#bYZn?bdC?!Hiv', 1),
+(6, 'Tomasz', 'Okulski', '55555555555', '99-999 Warszawa, ul. Wysoka 1', '', 'siankotm+to@gmail.com', '1953-12-01', 'M', 1, '$2y$06$TzlGVHBAdlpARkhyJFlASOfRjqkXlZQDTXEeer9K057nxZKkM.gyq', 'O9FTp@vZ@FHr$Y@I', 1),
+(7, 'Julia', 'Adamska', '44444444444', '99-999 Warszawa, ul. Wysoka 23', '', 'siankotm+jn@gmail.com', '1984-08-15', 'K', 0, '$2y$06$OXQjYllabj9iZEM/IUhpde8Z4IwB.YQwyRNMfmkf9v6BHvosPJgh6', '9t#bYZn?bdC?!Hiv', 1),
+(8, 'Karolina', 'Mocna', '45120874614', '99-999 Łódź, ul. Wysoka 23', '', 'siankotm+km@gmail.com', '1945-12-08', 'K', 0, '$2y$06$aEBvVDlZaFZFSW13MzlGZud1v6S91Mi8P63.bwRfsb8UAsJ/3M2fO', 'h@oT9YhVEImw39Fg', 1),
+(9, 'Marta', 'Adamska', '85070512345', '99-999 Łódź, ul. Inna 2', '', 'siankotm+ma@gmail.com', '1985-07-05', 'K', 1, '$2y$06$I2RweDdGQHpzdER2R2dSVuxsGvrixtqCM1BT6PovRzyii699G/yOy', '#dpx7F@zstDvGgRW', 1);
 
 -- --------------------------------------------------------
 
@@ -147,17 +153,27 @@ CREATE TABLE IF NOT EXISTS `wizyty` (
   PRIMARY KEY (`id`),
   KEY `fk_wizyty_pacjent` (`pacjent_id`),
   KEY `fk_wizyty_lekarz` (`lekarz_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=17 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=79 ;
 
 --
 -- Zrzut danych tabeli `wizyty`
 --
 
 INSERT INTO `wizyty` (`id`, `lekarz_id`, `pacjent_id`, `data`, `data_koniec`, `status`) VALUES
-(13, 3, 1, '2013-12-05 20:33:42', '2013-12-05 21:33:42', 0),
-(14, 7, 1, '2013-12-05 20:33:42', '2013-12-05 21:03:42', 0),
-(15, 3, 1, '2013-12-05 21:01:48', '2013-12-05 22:01:48', 0),
-(16, 7, 1, '2013-12-05 21:01:48', '2013-12-05 21:31:48', 0);
+(61, 6, 2, '2013-12-14 23:00:00', '2013-12-14 23:35:00', 0),
+(62, 6, 2, '2013-12-14 12:00:00', '2013-12-14 12:35:00', 0),
+(65, 6, 2, '2013-12-21 12:00:00', '2013-12-21 12:35:00', 0),
+(66, 6, 7, '2013-12-19 08:00:00', '2013-12-19 08:35:00', 1),
+(69, 3, 1, '2013-12-16 08:44:00', '2013-12-16 23:59:59', 0),
+(70, 3, 1, '2013-12-17 00:00:00', '2013-12-17 23:44:00', 0),
+(71, 6, 1, '2013-12-16 07:44:00', '2013-12-16 23:59:59', 0),
+(72, 6, 1, '2013-12-17 00:00:00', '2013-12-17 23:44:00', 0),
+(73, 3, 2, '2013-12-24 15:00:00', '2013-12-24 16:00:00', 1),
+(74, 3, 2, '2013-12-24 17:00:00', '2013-12-24 18:00:00', 0),
+(75, 3, 2, '2013-12-24 14:00:00', '2013-12-24 15:00:00', 0),
+(76, 3, 2, '2013-12-24 16:00:00', '2013-12-24 17:00:00', 0),
+(77, 2, 7, '2013-12-25 08:40:00', '2013-12-25 09:00:00', 0),
+(78, 2, 2, '2013-12-17 12:00:00', '2013-12-17 12:20:00', 0);
 
 --
 -- Ograniczenia dla zrzutów tabel
