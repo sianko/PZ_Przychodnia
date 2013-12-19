@@ -19,8 +19,16 @@ class IndexController extends AbstractActionController
         else {
             $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
+            $get_id = (int)$this->params()->fromRoute('id', 0);
+            
             $repository = $objectManager->getRepository('Application\Entity\Osoba');
             $queryBuilder = $repository->createQueryBuilder('os');
+           
+            
+            // Gdy param id = 1, wyświetlani są tylko pacjenci; id = 2 - tylko lekarze; id = 3 - tylko recepcja
+            if($get_id > 0) {
+                $queryBuilder->where($queryBuilder->getRootAlias().'.poziom = '.($get_id - 1));
+            }
            
             $queryBuilder->orderBy($queryBuilder->getRootAlias().'.aktywny', 'ASC');
             $queryBuilder->addOrderBy($queryBuilder->getRootAlias().'.nazwisko', 'ASC');
@@ -117,19 +125,63 @@ class IndexController extends AbstractActionController
         return array('wynik' => \Zend\Json\Json::encode($lista, true), 'list' => $lista, 'request'=>$this->getRequest());
     }
 
-    public function dodajAction()
-    {
-        return array();
-    }
-
-    public function edytujAction()
-    {
-        return array();
-    }
 
     public function usunAction()
     {
-        return array();
+        $get_id = (int)$this->params()->fromRoute('id', 0);   
+        
+        if(!$this->identity() || $this->identity()->poziom != 2) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie', 'id' => 1));
+        
+        if($get_id == 1) return array('msg' => array(0=>0, 1=>'Nie można usunąć użytkownika systemowego (#1).'));
+        
+        $msg = null;
+
+        $request = $this->getRequest();
+        if (!$request->isPost()) {
+            $form = new \Application\Form\YesCancelForm();
+            return array('msg' => array(0=>2, 1=>'Czy na pewno chcesz dokonać usunięcia?'), 'form' => $form);
+        } else if($request->getPost()->get('submity')) {
+        
+            $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+        
+            if($get_id < 1 || !($osoba = $objectManager->find('Application\Entity\Osoba',$get_id))){
+                return array('msg' => array(0=>0, 1=>'Niewłaściwy identyfikator osoby.'));    
+
+            } else {
+                // Usunięcie powiązanych wizyt w celu zachowania integralności bazy
+                $repo = $objectManager->getRepository('Application\Entity\Wizyta');
+                $powiazaneWizyty = $repo->findBy(array('pacjent' => $osoba->getId()));
+                foreach($powiazaneWizyty as $powiazana){
+                    $objectManager->remove($powiazana);
+                }
+                
+                // Usunięcie powiązanych specjalności lekarskich w celu zachowania integralności bazy
+                if($osoba->getPoziom() == 1){
+                    $repoLek = $objectManager->getRepository('Application\Entity\Lekarz');
+                    $powiazaniLekarze = $repoLek->findBy(array('os' => $osoba->getId()));
+                    foreach($powiazaniLekarze as $powiazanyDr){
+                        $powiazaneWizyty = $repo->findBy(array('lekarz' => $powiazanyDr->getLid()));
+                        foreach($powiazaneWizyty as $powiazana){
+                            $objectManager->remove($powiazana);
+                        }
+                        
+                        $objectManager->remove($powiazanyDr);
+                    }
+                }
+                
+                $objectManager->remove($osoba);
+                $objectManager->flush();
+                return array('msg' => array(0=>1, 1=>'Usunięto pomyślnie.'));
+            }
+            
+            
+            
+        } else {
+            return $this->redirect()->toRoute('uzytkownik', array('controller' => 'index'));
+        }
+        
+        
+       return array('msg' => array(0=>0, 1=>'Błąd.')); 
     }
     
 }

@@ -1,1 +1,28 @@
-Usuń
+<?php
+    $tytul = 'Usuń użytkownika';
+    $this->headTitle($tytul);
+    echo '<h1>'.$tytul.'</h1>';
+    echo '<div style="width: 500px; margin: 0 auto;">';
+    if($this->msg[0] == 0){
+        echo '<div class="alert alert-danger">'.$this->msg[1].'</div>';
+    } else if($this->msg[0] == 2 && isset($this->form)){
+         $formularz = $this->form;
+         $formularz->prepare();
+         
+         echo $this->form()->openTag($formularz);
+         echo '<div class="alert alert-warning"><p>'.$this->msg[1].'</p>';
+         echo '<p class="text-right">'.$this->formSubmit($form->get('submity')).' '.$this->formSubmit($form->get('submitc')).'</p>';
+         echo '</div>';
+         echo $this->form()->closeTag($formularz);
+    } else {
+        echo '<div class="alert alert-success">'.$this->msg[1].'</div>';
+    }
+
+    
+    
+?> 
+<p style="margin-top: 60px;" class="text-center">
+<a href="<?php echo $this->url('uzytkownik', array('controller' => 'index')); ?>" title="" class="btn btn-sm btn-success">
+        <span class="glyphicon glyphicon-list"></span> Lista wszystkich użytkowników</a>
+</p>
+</div>

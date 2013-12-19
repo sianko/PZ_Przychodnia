@@ -13,7 +13,35 @@
  
  
  ?>
- <h1><?php echo $this->escapeHtml($title); ?></h1>
+ <div class="row">
+     <div class="col-md-6">
+        <h1 style="margin-top: 5px;">
+        <?php 
+            echo $this->escapeHtml($title); 
+        ?>    
+        </h1>
+     </div>
+    <div class="col-md-6 text-right">
+        <div class="btn-group text-left" style="margin-top: 5px;">
+            <a href="<?php echo $this->url($this->route, array('controller' => 'rejestracja', 'action' => 'edytuj')); ?>" class="btn btn-default">
+            <span class="glyphicon glyphicon-plus-sign"></span> Dodaj użytkownika
+            </a>
+        </div>
+        <div class="btn-group text-left" style="margin-top: 5px;">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            Filtruj <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <?php
+               echo '<li><a href="'.($this->url($this->route, array('id'=>0), false, true)).'">Wszyscy</a></li>';
+               echo '<li><a href="'.($this->url($this->route, array('id'=>1), false, true)).'">Pacjenci</a></li>';
+               echo '<li><a href="'.($this->url($this->route, array('id'=>2), false, true)).'">Lekarze</a></li>';
+               echo '<li><a href="'.($this->url($this->route, array('id'=>3), false, true)).'">Recepcja</a></li>';
+            ?>
+          </ul>
+        </div>
+    </div>
+</div>
 
    <table class="table table-striped table-condensed alert alert-info">
    <thead>
@@ -37,7 +65,7 @@
     
     <a href="'.$this->url('wizyta', array('oid' => $entityObject->getId())).'" class="glyphicon glyphicon-list-alt btn btn-default btn-xs tooltip-btn" data-toggle="tooltip" title="" data-original-title="Wyświetl wizyty" style="padding: 3px 6px;"></a> 
     
-    <a class="glyphicon glyphicon-wrench btn btn-primary btn-xs tooltip-btn" data-toggle="tooltip" title="" style="padding: 3px 6px;" data-original-title="Edytuj"></a>
+    <a href="'.($this->url($this->route, array('controller' => 'rejestracja', 'action' => 'edytuj', 'id' => $entityObject->getId()))).'" class="glyphicon glyphicon-wrench btn btn-primary btn-xs tooltip-btn" data-toggle="tooltip" title="" style="padding: 3px 6px;" data-original-title="Edytuj"></a>
      
     <a href="'.$this->url('uzytkownik', array('controller' => 'index', 'action' => 'usun', 'id' => $entityObject->getId())).'"  class="glyphicon glyphicon-trash btn btn-danger btn-xs tooltip-btn" data-toggle="tooltip" title="" style="padding: 3px 6px;" data-original-title="Usuń"></a>
    
