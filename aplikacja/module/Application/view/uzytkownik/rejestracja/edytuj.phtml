@@ -1,0 +1,55 @@
+<?php 
+    
+    $tytul = ($this->edycjaCzyDodawanie ? 'Edycja' : 'Rejestracja').' osoby';
+    $this->headTitle($tytul);
+    echo '<h1>'.$tytul.'</h1>';
+    
+    if(is_array($this->msg) && $this->msg[0] == 1){
+        echo '<div class="alert alert-success">'.$this->msg[1].' </div>';
+                
+    } else if(is_array($this->msg)){
+        echo '<div class="alert alert-danger">'.$this->msg[1].'</div>';
+    }
+    
+    if(isset($this->form)){//odwoluje sie do pola ktore nie istnieje w klasie, ono jest przekazywane w Controllerze
+    
+    $formularz = $this->form;
+    
+    $formularz->prepare();
+    echo $this->form()->openTag($formularz);
+?>
+
+<div class="row">
+    <div class="col-md-6 col-md-offset-1" style="border-right: 1px solid #ccc;">
+        
+        <dl class="dl-horizontal formularz" id="polaDaneOsobowe" style="width: 430px;">
+          <dt>Imię</dt><dd><?php echo $this->formRow($form->get('imie')); ?></dd>
+          <dt>Nazwisko</dt><dd><?php echo $this->formRow($form->get('nazwisko')); ?></dd>
+          <dt>PESEL</dt><dd><?php echo $this->formRow($form->get('pesel')); ?></dd>
+          
+          <dt></dt><dd style="padding-top: 5px;"><small><span style="padding-right: 50px;">dzień</span><span style="padding-right: 50px;">miesiąc</span>rok</small></dd>
+          <dt>Data ur.</dt><dd><?php echo $this->formRow($form->get('data_ur_dd')).$this->formRow($form->get('data_ur_mm')).$this->formRow($form->get('data_ur_rr')); ?></dd>
+          <dt>Adres</dt><dd><?php echo $this->formRow($form->get('adres')); ?></dd>
+          <dt>E-mail</dt><dd><?php echo $this->formRow($form->get('email')); ?></dd>
+          <dt>Telefon</dt><dd><?php echo $this->formRow($form->get('telefon')); ?></dd>
+          <dt>Płeć</dt><dd><?php echo $this->formRow($form->get('plec')); ?></dd>
+		  <dt>Hasło</dt><dd><?php echo $this->formRow($form->get('haslo')); ?></dd>
+		  <dt>Powtórz hasło</dt><dd><?php echo $this->formRow($form->get('haslo_powt')); ?></dd>
+        </dl>  
+        
+        <dl class="dl-horizontal formularz" style="width: 430px;">
+          <dt></dt><dd><br /><?php echo $this->formSubmit($form->get('submit')); ?></dd>
+        </dl>
+    </div>
+    <div class="col-md-3">
+       
+        
+    </div>
+</div>
+<?php
+    
+    echo $this->form()->closeTag($formularz);
+    
+    
+    }
+?>
