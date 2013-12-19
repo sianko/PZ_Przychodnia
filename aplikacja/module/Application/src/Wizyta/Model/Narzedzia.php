@@ -74,7 +74,7 @@ class Narzedzia
      *  @return array of \DateTime - postaci: tablica[int: dzień miesiąca][int: przedziały wolnych godzin][0:godzina początkowa | 1: godzina końcowa]
      */
     
-    public static function wolneTerminy($context, $lekarz, $miesiac, $rok)
+    public static function wolneTerminy($context, $lekarz, $miesiac, $rok, $przyszlosc = true)
     {
         $miesiac = intval($miesiac);
         $rok = intval($rok);
@@ -91,6 +91,9 @@ class Narzedzia
         $queryBuilder->where($alias.'.lekarz = '. $lekarz->getLid());
         $queryBuilder->andWhere($alias.'.data >= \''. $rok .'-'.$miesiac.'-01 00:00:00\'');
         $queryBuilder->andWhere($alias.'.data <= \''. $rok .'-'.$miesiac.'-31 23:59:59\'');
+        
+        
+        
         $query = $queryBuilder->getQuery();
         $wynik = $query->execute();
         
@@ -109,6 +112,7 @@ class Narzedzia
             $indeks = $w->getData()->format('Y-m-d');
             $numerDnia = $w->getData()->format('j');
             
+            
             // Konwersja tablicy stringów na tablicę obiektów DateTime (względem daty wizyty)
             foreach($grafik[$w->getData()->format('N')-1] as $g){
                 $explode = explode('-', $g);
@@ -121,7 +125,9 @@ class Narzedzia
                     throw new \Exception("Nieprawidłowy format godzin w grafiku.");
                 }
             }
-
+            
+            
+            
             if(isset($zGrafikuDateTime)){ // przeciwym przypadek oznacza, że danego dnia lekarz nie przyjmuje (wg grafiku) 
                
                 // Analiza wszystkich przedziałów godzinowych z grafiku z określonego dnia tygodnia
@@ -178,30 +184,39 @@ class Narzedzia
         // Dni, w których nie ma żadnych wizyt, ustawiane są godziny z grafiku
         for($nrDnia = 1; $nrDnia <= $podanaData->format('t'); $nrDnia++){
                 
-            if($kalendarz[$nrDnia] === false){
-                $indeks = $podanaData->format('Y-m').'-'.$nrDnia;
+           $indeks = $podanaData->format('Y-m').'-'.$nrDnia;
+
+           if($kalendarz[$nrDnia] === false){
                 $sprawdzanaData = new \DateTime($indeks);
                 
-                // Konwersja tablicy stringów na tablicę obiektów DateTime
-                foreach($grafik[$sprawdzanaData->format('N')-1] as $g){
-                    $explode = explode('-', $g);
-                    if(count($explode) == 2){
-                        $gPocz = new \DateTime($indeks.' '.$explode[0]);
-                        $gKon = new \DateTime($indeks.' '.$explode[1]);
-                        
-                        $zGrafikuDateTime[] = array(0 => $gPocz, 1 => $gKon);
-                    } else {
-                        throw new \Exception("Nieprawidłowy format godzin w grafiku.");
+                // Tylko przyszłe terminy
+                if($przyszlosc && strtotime($indeks.' 23:59:59') <= time()){
+                    $kalendarz[$nrDnia] = array();
+                }
+                else {
+                
+                    // Konwersja tablicy stringów na tablicę obiektów DateTime
+                    foreach($grafik[$sprawdzanaData->format('N')-1] as $g){
+                        $explode = explode('-', $g);
+                        if(count($explode) == 2){
+                            $gPocz = new \DateTime($indeks.' '.$explode[0]);
+                            $gKon = new \DateTime($indeks.' '.$explode[1]);
+                            
+                            $zGrafikuDateTime[] = array(0 => $gPocz, 1 => $gKon);
+                        } else {
+                            throw new \Exception("Nieprawidłowy format godzin w grafiku.");
+                        }
+                    }
+                
+                    if(isset($zGrafikuDateTime)){
+                        foreach($zGrafikuDateTime as $zGrafiku){
+                            $kalendarz[$nrDnia] = array(0 => $zGrafiku);
+                        }
+                        unset($zGrafikuDateTime);
                     }
                 }
-            
-                if(isset($zGrafikuDateTime)){
-                    foreach($zGrafikuDateTime as $zGrafiku){
-                        $kalendarz[$nrDnia] = array(0 => $zGrafiku);
-                    }
-                    unset($zGrafikuDateTime);
-                }
-            
+            } else if($przyszlosc && strtotime($indeks.' 23:59:59') <= time()){
+                $kalendarz[$nrDnia] = array();
             }
     
         }

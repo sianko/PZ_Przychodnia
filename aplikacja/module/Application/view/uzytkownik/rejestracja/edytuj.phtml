@@ -1,5 +1,38 @@
 <?php 
     
+    $this->headScript()->appendFile('/js/funkcje.js');
+    
+    $this->headScript()->appendScript('
+
+        $(document).ready(function (){ 
+           
+           
+           $("[name=\'pesel\']").keyup(function (){
+               var p = $(this).val();
+               if(walidacjaPESEL(p) == 0){
+                    $(this).css("background-color", "#FF9999");
+               } else {
+                    $(this).css("background-color", "#FFFFFF");
+               }
+               
+               
+               var du = dataUrodzeniaPESEL(p);
+               if(du != 0){
+                    $("[name=\'data_ur_dd\']").val(du.getDate());
+                    $("[name=\'data_ur_mm\']").val(du.getMonth() + 1);
+                    $("[name=\'data_ur_rr\']").val(du.getFullYear());
+                   
+                    $("[name=\'plec\']").val(parseInt(p[9])%2 == 0 ? "K" : "M");
+               }
+               
+           });
+           
+        });
+        
+        
+        
+        ');
+    
     $tytul = ($this->edycjaCzyDodawanie ? 'Edycja' : 'Rejestracja').' osoby';
     $this->headTitle($tytul);
     echo '<h1>'.$tytul.'</h1>';

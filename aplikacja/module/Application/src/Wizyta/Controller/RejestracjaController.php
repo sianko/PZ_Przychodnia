@@ -60,6 +60,7 @@ class RejestracjaController extends AbstractActionController
             }
             
             $k = \Wizyta\Model\Narzedzia::wolneTerminy($this, $os, $m, $r);
+
             
             $dzienTygPierwszegoDniaMiesiaca = new \DateTime($r.'-'.$m.'-1');
             $dzienTygPierwszegoDniaMiesiaca = $dzienTygPierwszegoDniaMiesiaca->format('N');
