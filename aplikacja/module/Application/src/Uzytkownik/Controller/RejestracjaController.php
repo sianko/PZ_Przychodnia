@@ -60,7 +60,17 @@ class RejestracjaController extends AbstractActionController
             $form->get('data_ur_mm')->setValue($dataSplit[1]);
             $form->get('data_ur_rr')->setValue($dataSplit[2]);
             
-                        
+            
+            // jeżeli konto jest aktywne i nie jest adminem, to niektóre pola są w trybie read-only
+            if($osoba->getAktywny() == 1 && $this->identity()->poziom != 2){
+                $form->get('imie')->setAttribute('readonly', 'true');
+                $form->get('nazwisko')->setAttribute('readonly', 'true');
+                $form->get('pesel')->setAttribute('readonly', 'true');
+                $form->get('plec')->setAttribute('disabled', 'disabled');
+                $form->get('data_ur_dd')->setAttribute('disabled', 'disabled');
+                $form->get('data_ur_mm')->setAttribute('disabled', 'disabled');
+                $form->get('data_ur_rr')->setAttribute('disabled', 'disabled');
+            }           
         } else {
             //dla wpisywania nowej osoby po klinkieciu SUBMIT
             
