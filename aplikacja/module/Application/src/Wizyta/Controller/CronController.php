@@ -65,6 +65,7 @@ class CronController extends AbstractActionController
             \Wizyta\Model\Narzedzia::powiadom(array($mail), $wiadomosc, 'Przypomnienie o wizycie');
         }
         
+        return;
     }
     
     

@@ -1,5 +1,5 @@
 <?php 
-    
+    $this->headScript()->appendFile('/js/funkcje.js');
     
     $this->headScript()->appendScript('
     
@@ -35,8 +35,6 @@
             xmlhttp.send();
         }
         
-        
-        
         $(document).ready(function (){ 
            $("#selectExistedUser").click(function (){ 
             showUser();
@@ -58,7 +56,28 @@
                 });   
            });
            
+           $("[name=\'pesel\']").keyup(function (){
+               var p = $(this).val();
+               if(walidacjaPESEL(p) == 0){
+                    $(this).css("background-color", "#FF9999");
+               } else {
+                    $(this).css("background-color", "#FFFFFF");
+               }
+               
+               
+               var du = dataUrodzeniaPESEL(p);
+               if(du != 0){
+                    $("[name=\'data_ur_0\']").val(du.getDate());
+                    $("[name=\'data_ur_1\']").val(du.getMonth() + 1);
+                    $("[name=\'data_ur_2\']").val(du.getFullYear());
+                   
+                    $("[name=\'plec\']").val(parseInt(p[9])%2 == 0 ? "K" : "M");
+               }
+               
+           });
+           
         });
+        
         
         
         ');
