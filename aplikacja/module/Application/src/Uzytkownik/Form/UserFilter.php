@@ -119,7 +119,7 @@ class UserFilter extends InputFilter
 
         $this->add(array(
 			'name'     => 'haslo',
-			'required' => true,
+            'required' => false,
 			'validators' => array(
 				    array(
 					'name'    => 'StringLength',

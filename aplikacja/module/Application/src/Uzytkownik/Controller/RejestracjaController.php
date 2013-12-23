@@ -27,7 +27,7 @@ class RejestracjaController extends AbstractActionController
         
         // if(!$this->identity() || !($this->identity()->poziom == 1 || $this->identity()->poziom == 2)) return $this->redirect()->toRoute('uzytkownik', array('controller' => 'logowanie', 'id' => 1));
         
-        $edycjaCzyDodawanie = 1;
+        $edycjaCzyDodawanie = 1; // = 1 gdy edycja; = 0 gdy dodawanie
         $msg = null; //info na ekran
         
         $form = new \Uzytkownik\Form\UserForm();
@@ -80,54 +80,59 @@ class RejestracjaController extends AbstractActionController
             $form->setData($request->getPost()); //ustawia dane w formularzu
             if ($form->isValid()) {
                 $data = $form->getData();
-                if ($data['haslo']!==$data['haslo_powt'])  
-				return array('msg' => array(0=>false, 1=>'Hasła się nie pokrywaja'));
                 
-                    $osoba->setImie($data['imie']);
-                    $osoba->setNazwisko($data['nazwisko']);
-                    $osoba->setPesel($data['pesel']);
-                    $osoba->setAdres($data['adres']);
-                    $osoba->setEmail($data['email']);
-                    $osoba->setTelefon($data['telefon']);
-					
-					//
-					$pass = $data['haslo'];
-					
-
-					$sol = Rand::getString(16, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!?@#$%0123456789', true);
-        
-         
-					$bcrypt = new Bcrypt(array(
-					'salt' => $sol,
-					'cost' => 6 ));
-					$wynik_hash = $bcrypt->create($pass); 
-					$sol = $bcrypt->getSalt();
-							
-					//
+                // jeżeli zaznaczone pole chęci zmiany hasła i hasła są takie same, to zmieniamy w bazie
+                if(($edycjaCzyDodawanie == 0 || $data['zmien_haslo'] === 'tak') && !empty($data['haslo']) && $data['haslo'] === $data['haslo_powt']){
+                    //
+                    $pass = $data['haslo'];
+                    
+                    $sol = Rand::getString(16, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!?@#$%0123456789', true);
+     
+                    $bcrypt = new Bcrypt(array(
+                    'salt' => $sol,
+                    'cost' => 6 ));
+                    $wynik_hash = $bcrypt->create($pass); 
+                    $sol = $bcrypt->getSalt();
+                            
+                    //
                     $osoba->setHaslo($wynik_hash);
                     $osoba->setSol($sol);
+
+                } else if($data['zmien_haslo'] === 'tak'){
+                    return array('msg' => array(0=>false, 1=>'Hasła się nie pokrywaja lub hasło jest puste.'));
+                }
+
+                
+                $osoba->setImie($data['imie']);
+                $osoba->setNazwisko($data['nazwisko']);
+                $osoba->setPesel($data['pesel']);
+                $osoba->setAdres($data['adres']);
+                $osoba->setEmail($data['email']);
+                $osoba->setTelefon($data['telefon']);
+                $osoba->setDataUr(new \DateTime($data['data_ur_rr'].'-'.$data['data_ur_mm'].'-'.$data['data_ur_dd']));
+                $osoba->setPlec($data['plec']);
+                                    
+                
+                
+                try{
+                    // jeżeli operacji dokonuje admin, to dodawana osoba automatycznie jest aktywowana
+                    if($this->identity()->poziom == 2) $osoba->setAktywny(1);
                     
-					$osoba->setDataUr(new \DateTime($data['data_ur_rr'].'-'.$data['data_ur_mm'].'-'.$data['data_ur_dd']));
-					$osoba->setPlec($data['plec']);
-					                    
-                    
-                    
-                    try{
                     $objectManager->persist($osoba);
                     $objectManager->flush();
                     
-					$msg[1] = 'Baza została zaktualizowana poprawnie.';
+                    $msg[1] = 'Baza została zaktualizowana poprawnie.';
                     $msg[0] = true;
-					}
-					catch(\Exception $exc){
-						$msg[1] = 'Formularz został wypełniony niewłaściwie.';
-						$msg[0] = false;
-					}
+                }
+                catch(\Exception $exc){
+                    $msg[1] = 'Formularz został wypełniony niewłaściwie. [#2]';
+                    $msg[0] = false;
+                }
                     
                     
                 
             } else{
-                $msg[1] = 'Formularz został wypełniony niewłaściwie.';
+                $msg[1] = 'Formularz został wypełniony niewłaściwie. [#1]';
                 $msg[0] = false;
             }
         }

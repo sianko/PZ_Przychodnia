@@ -153,5 +153,18 @@ class UserForm extends Form
                 'class' => 'form-control',
               ),
         ));
+        
+        $this->add(array(
+            'name' => 'zmien_haslo',
+            'type' => 'Zend\Form\Element\Checkbox',
+            'attributes' => array(
+                'id' => 'switch_zmien_haslo'
+              ),
+            'options' => array(
+                     'checked_value' => 'tak',
+                     'unchecked_value' => 'nie'
+             )
+        ));
+        
     }
 }

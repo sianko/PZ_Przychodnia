@@ -53,12 +53,13 @@ class IndexController extends AbstractActionController
             $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
 
             $get_id = (int)$this->params()->fromRoute('id', 0);
-            $get_page = (int)$this->params()->fromRoute('page', 2);
+            $get_page = (int)$this->params()->fromRoute('page', 1);
             
-            if($get_page != 0 || $get_page != 1 || $get_page != 2) $get_page = 0; 
+            if($get_page != 0 && $get_page != 1 && $get_page != 2) $get_page = 0; 
             
             $o = $objectManager->find('Application\Entity\Osoba', $get_id);
             if($o instanceof \Application\Entity\Osoba){
+                
                 $o->setPoziom($get_page);
                 $objectManager->persist($o);
                 $objectManager->flush();
@@ -141,40 +142,43 @@ class IndexController extends AbstractActionController
             $form = new \Application\Form\YesCancelForm();
             return array('msg' => array(0=>2, 1=>'Czy na pewno chcesz dokonać usunięcia?'), 'form' => $form);
         } else if($request->getPost()->get('submity')) {
-        
-            $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
-            if($get_id < 1 || !($osoba = $objectManager->find('Application\Entity\Osoba',$get_id))){
-                return array('msg' => array(0=>0, 1=>'Niewłaściwy identyfikator osoby.'));    
+            try {
+                $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+            
+                if($get_id < 1 || !($osoba = $objectManager->find('Application\Entity\Osoba',$get_id))){
+                    return array('msg' => array(0=>0, 1=>'Niewłaściwy identyfikator osoby.'));    
 
-            } else {
-                // Usunięcie powiązanych wizyt w celu zachowania integralności bazy
-                $repo = $objectManager->getRepository('Application\Entity\Wizyta');
-                $powiazaneWizyty = $repo->findBy(array('pacjent' => $osoba->getId()));
-                foreach($powiazaneWizyty as $powiazana){
-                    $objectManager->remove($powiazana);
-                }
-                
-                // Usunięcie powiązanych specjalności lekarskich w celu zachowania integralności bazy
-                if($osoba->getPoziom() == 1){
-                    $repoLek = $objectManager->getRepository('Application\Entity\Lekarz');
-                    $powiazaniLekarze = $repoLek->findBy(array('os' => $osoba->getId()));
-                    foreach($powiazaniLekarze as $powiazanyDr){
-                        $powiazaneWizyty = $repo->findBy(array('lekarz' => $powiazanyDr->getLid()));
-                        foreach($powiazaneWizyty as $powiazana){
-                            $objectManager->remove($powiazana);
-                        }
-                        
-                        $objectManager->remove($powiazanyDr);
+                } else {
+                    // Usunięcie powiązanych wizyt w celu zachowania integralności bazy
+                    $repo = $objectManager->getRepository('Application\Entity\Wizyta');
+                    $powiazaneWizyty = $repo->findBy(array('pacjent' => $osoba->getId()));
+                    foreach($powiazaneWizyty as $powiazana){
+                        $objectManager->remove($powiazana);
                     }
+                    
+                    // Usunięcie powiązanych specjalności lekarskich w celu zachowania integralności bazy
+                    if($osoba->getPoziom() == 1){
+                        $repoLek = $objectManager->getRepository('Application\Entity\Lekarz');
+                        $powiazaniLekarze = $repoLek->findBy(array('os' => $osoba->getId()));
+                        foreach($powiazaniLekarze as $powiazanyDr){
+                            $powiazaneWizyty = $repo->findBy(array('lekarz' => $powiazanyDr->getLid()));
+                            foreach($powiazaneWizyty as $powiazana){
+                                $objectManager->remove($powiazana);
+                            }
+                            
+                            $objectManager->remove($powiazanyDr);
+                        }
+                    }
+                    
+                    $objectManager->remove($osoba);
+                    $objectManager->flush();
+                    return array('msg' => array(0=>1, 1=>'Usunięto pomyślnie.'));
                 }
                 
-                $objectManager->remove($osoba);
-                $objectManager->flush();
-                return array('msg' => array(0=>1, 1=>'Usunięto pomyślnie.'));
+            } catch (\Exception $exc) 
+            {
+                return array('msg' => array(0=>0, 1=>'Wystąpił błąd. ['.$exc->getMessage().']'));
             }
-            
-            
             
         } else {
             return $this->redirect()->toRoute('uzytkownik', array('controller' => 'index'));

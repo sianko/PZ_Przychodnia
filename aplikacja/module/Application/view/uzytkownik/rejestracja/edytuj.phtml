@@ -27,6 +27,20 @@
                
            });
            
+           function wylaczPolaHasla(){
+            if($(this).is(\':checked\')){
+                    $("[name=\'haslo\'], [name=\'haslo_powt\']").removeAttr("disabled");
+                } else {
+                    $("[name=\'haslo\'], [name=\'haslo_powt\']").attr("disabled", "disabled");
+                }
+           }
+           
+           '.($this->edycjaCzyDodawanie == 1 ? '
+           wylaczPolaHasla();
+           $("#switch_zmien_haslo").click(wylaczPolaHasla);
+           ' 
+           : '$(".opcjaHaslo").hide(); $("#switch_zmien_haslo").attr(\'checked\', true);
+').'
         });
         
         
@@ -66,7 +80,11 @@
           <dt>E-mail</dt><dd><?php echo $this->formRow($form->get('email')); ?></dd>
           <dt>Telefon</dt><dd><?php echo $this->formRow($form->get('telefon')); ?></dd>
           <dt>Płeć</dt><dd><?php echo $this->formRow($form->get('plec')); ?></dd>
-		  <dt>Hasło</dt><dd><?php echo $this->formRow($form->get('haslo')); ?></dd>
+          
+          
+          <dt class="opcjaHaslo"><br /><?php echo $this->formRow($form->get('zmien_haslo')); ?></dt><dd class="opcjaHaslo"><br /> zmień hasło</dd>
+		  
+          <dt>Hasło</dt><dd><?php echo $this->formRow($form->get('haslo')); ?></dd>
 		  <dt>Powtórz hasło</dt><dd><?php echo $this->formRow($form->get('haslo_powt')); ?></dd>
         </dl>  
         

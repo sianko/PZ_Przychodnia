@@ -196,6 +196,10 @@ class ProfilController extends AbstractActionController
                         \Wizyta\Model\Narzedzia::powiadom(array($lekarz), 'Utworzono konto użytkownika <b>'.$lekarz->getImie().' '.$lekarz->getNazwisko().'</b>. <br> Tymczasowe hasło: '. $hasloLosowe . ' (Pamiętaj, aby zmienić je po pierwszym zalogowaniu.). <br><br>Pozdrawiamy', 'Konto zostało utworzone');
                     }
                     
+                    
+                    // jeżeli operacji dokonuje admin, to dodawana osoba automatycznie jest aktywowana
+                    if($this->identity()->poziom == 2) $lekarz->setAktywny(1);
+                    
                     $objectManager->persist($lekarz);
                     $objectManager->flush();
                     
@@ -225,29 +229,33 @@ class ProfilController extends AbstractActionController
             $form = new \Application\Form\YesCancelForm();
             return array('msg' => array(0=>2, 1=>'Czy na pewno chcesz dokonać usunięcia?<br />Usunięty zostanie tylko profil zawodowy, a nie profil osoby.'), 'form' => $form);
         } else if($request->getPost()->get('submity')) {
-        
-            $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-        
-            if($get_id < 1 || !($lekarz = $objectManager->find('Application\Entity\Lekarz',$get_id))){
-                return array('msg' => array(0=>0, 1=>'Niewłaściwy identyfikator lekarza.'));    
+            
+            try {
+                $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+            
+                if($get_id < 1 || !($lekarz = $objectManager->find('Application\Entity\Lekarz',$get_id))){
+                    return array('msg' => array(0=>0, 1=>'Niewłaściwy identyfikator lekarza.'));    
 
-            } else if($this->identity()->poziom == 1 && $lekarz->getId() != $this->identity()->id){
-                return array('msg' => array(0=>0, 1=>'Nie masz uprawnień do tej operacji.'));
-            } else {
-                
-                // Usunięcie powiązanych wizyt w celu zachowania integralności bazy
-                $repo = $objectManager->getRepository('Application\Entity\Wizyta');
-                $powiazaneWizyty = $repo->findBy(array('lekarz' => $lekarz->getLid()));
-                foreach($powiazaneWizyty as $powiazana){
-                    $objectManager->remove($powiazana);
+                } else if($this->identity()->poziom == 1 && $lekarz->getId() != $this->identity()->id){
+                    return array('msg' => array(0=>0, 1=>'Nie masz uprawnień do tej operacji.'));
+                } else {
+                    
+                    // Usunięcie powiązanych wizyt w celu zachowania integralności bazy
+                    $repo = $objectManager->getRepository('Application\Entity\Wizyta');
+                    $powiazaneWizyty = $repo->findBy(array('lekarz' => $lekarz->getLid()));
+                    foreach($powiazaneWizyty as $powiazana){
+                        $objectManager->remove($powiazana);
+                    }
+                    
+                    $objectManager->remove($lekarz);
+                    $objectManager->flush();
+                    return array('msg' => array(0=>1, 1=>'Usunięto pomyślnie.'));
                 }
-                
-                $objectManager->remove($lekarz);
-                $objectManager->flush();
-                return array('msg' => array(0=>1, 1=>'Usunięto pomyślnie.'));
+            
+            } catch (\Exception $exc) 
+            {
+                return array('msg' => array(0=>0, 1=>'Wystąpił błąd. ['.$exc->getMessage().']'));
             }
-            
-            
             
         } else {
             return $this->redirect()->toRoute('lekarz', array('controller' => 'profil'));
