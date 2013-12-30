@@ -27,6 +27,7 @@ class UserFilter extends InputFilter
 						'max'      => 20,
 					),
 				),
+                new \Zend\Validator\Regex(array('pattern' => '/^[A-Za-zęóąśłżźćńĘÓĄŚŁŻŹĆŃ\-\s]*$/'))
 			),
 		));
         
@@ -46,6 +47,7 @@ class UserFilter extends InputFilter
 						'max'      => 40,
 					),
 				),
+                new \Zend\Validator\Regex(array('pattern' => '/^[A-Za-zęóąśłżźćńĘÓĄŚŁŻŹĆŃ\-\s]*$/'))
 			),
 		)); 
 
@@ -77,7 +79,7 @@ class UserFilter extends InputFilter
                     array('name' => 'StringTrim'),
                 ),
                 'validators' => array(
-                    new \Zend\Validator\Regex(array('pattern' => '/^[0-9\:\-;\s]*/'))
+                    new \Zend\Validator\Regex(array('pattern' => '/^[0-9\:\-;\s]*$/'))
                 ),
             ));  
         }

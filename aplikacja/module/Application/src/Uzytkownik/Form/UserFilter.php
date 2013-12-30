@@ -27,6 +27,7 @@ class UserFilter extends InputFilter
 						'max'      => 20,
 					),
 				),
+                new \Zend\Validator\Regex(array('pattern' => '/^[A-Za-zęóąśłżźćńĘÓĄŚŁŻŹĆŃ\-\s]*$/'))
 			),
 		));
         
@@ -46,6 +47,7 @@ class UserFilter extends InputFilter
 						'max'      => 40,
 					),
 				),
+                new \Zend\Validator\Regex(array('pattern' => '/^[A-Za-zęóąśłżźćńĘÓĄŚŁŻŹĆŃ\-\s]*$/'))
 			),
 		)); 
 
