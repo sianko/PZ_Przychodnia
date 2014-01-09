@@ -103,6 +103,18 @@ class ProfilController extends AbstractActionController
             
         $form->get('specjalnosc')->setValueOptions($specjalnosci);
             
+            
+        // jeżeli konto jest aktywne i nie jest adminem, to niektóre pola są w trybie read-only
+        if($lekarz->getAktywny() == 1 && $this->identity()->poziom != 2){
+            $form->get('imie')->setAttribute('readonly', 'true');
+            $form->get('nazwisko')->setAttribute('readonly', 'true');
+            $form->get('pesel')->setAttribute('readonly', 'true');
+            $form->get('plec')->setAttribute('disabled', 'disabled');
+            $form->get('data_ur_0')->setAttribute('disabled', 'disabled');
+            $form->get('data_ur_1')->setAttribute('disabled', 'disabled');
+            $form->get('data_ur_2')->setAttribute('disabled', 'disabled');
+        }    
+            
         $request = $this->getRequest();
         if (!$request->isPost()) {
 
@@ -145,19 +157,28 @@ class ProfilController extends AbstractActionController
             if ($form->isValid()) {
                 $data = $form->getData();
                 
+                $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
+                
                 if($data['istniejacaOsoba'] == '0' || $data['istniejacyUzytkownik'] < 1){
-                    $lekarz->setImie($data['imie']);
-                    $lekarz->setNazwisko($data['nazwisko']);
-                    $lekarz->setPesel($data['pesel']);
+
+                    // jeżeli konto jest aktywne i nie jest adminem, to niektóre pola są w trybie read-only
+                    // zatem ich nie zmieniamy
+                    if($lekarz->getAktywny() != 1 || $this->identity()->poziom == 2 || $lekarz->getId() <= 0 || !($istniejacaOsoba = $objectManager->find('Application\Entity\Osoba', $lekarz->getId()))){
+                        $lekarz->setImie($data['imie']);
+                        $lekarz->setNazwisko($data['nazwisko']);
+                        $lekarz->setPesel($data['pesel']);
+                        
+                        $lekarz->setDataUr(new \DateTime($data['data_ur_2'].'-'.$data['data_ur_1'].'-'.$data['data_ur_0']));
+                        $lekarz->setPlec($data['plec']);
+                    } else {
+                        $lekarz->setOs($istniejacaOsoba);
+                    }
+                    
                     $lekarz->setAdres($data['adres']);
                     $lekarz->setEmail($data['email']);
                     $lekarz->setTelefon($data['telefon']);
-                    $lekarz->setPlec($data['plec']);
                     
-                    $lekarz->setDataUr(new \DateTime($data['data_ur_2'].'-'.$data['data_ur_1'].'-'.$data['data_ur_0']));
                 } else {
-                    
-                    $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
                     $istniejacaOsoba = $objectManager->find('Application\Entity\Osoba',$data['istniejacyUzytkownik']);
                     $lekarz->setOs($istniejacaOsoba);
                 }

@@ -81,7 +81,7 @@
         <p class="alert alert-info" style="padding: 2px 3px; background: transparent;"><span class="glyphicon glyphicon-ok"></span> określ termin</p>
     
          <h3 class="text-center">
-         <?php if((date('m') > $this->miesiac && date('Y') == $this->rok) || date('Y') < $this->rok) { ?>
+         <?php if((date('m') < $this->miesiac && date('Y') == $this->rok) || date('Y') < $this->rok) { ?>
          <a href="<?php echo $this->url($this->route, array('category'=> $this->miesiac . ($this->rok - 1)), false, true); ?>" class="btn btn-primary btn-xs tooltip-btn" data-toggle="tooltip" data-original-title="Poprzedni rok"><span class="glyphicon glyphicon-backward"></span></a>
          
          <a href="<?php echo $this->url($this->route, array('category'=> ($this->miesiac - 1). $this->rok), false, true); ?>" class="btn btn-primary btn-xs tooltip-btn" data-toggle="tooltip" data-original-title="Poprzedni miesiąc"><span class="glyphicon glyphicon-chevron-left"></span></a>

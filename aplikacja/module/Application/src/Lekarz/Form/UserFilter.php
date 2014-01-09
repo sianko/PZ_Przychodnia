@@ -131,6 +131,23 @@ class UserFilter extends InputFilter
 				)
 			),
 		));	
+        
+        $this->add(array(
+			'name'     => 'data_ur_0',
+			'required' => false
+		));	 
+        $this->add(array(
+			'name'     => 'data_ur_1',
+			'required' => false
+		));	
+        $this->add(array(
+			'name'     => 'data_ur_2',
+			'required' => false
+		));	         
+        $this->add(array(
+			'name'     => 'plec',
+			'required' => false
+		));        
 
         $this->add(array(
 			'name'     => 'czas_na_pacjenta',

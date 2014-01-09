@@ -110,8 +110,11 @@ class RejestracjaController extends AbstractActionController
                 
                 $get_oid = $this->params()->fromRoute('oid', 0);
                 
-                if($this->identity()->poziom != 2){
+                if($this->identity()->poziom != 2)
+                {
                     $get_oid = $this->identity()->id;
+                } else if($get_oid <= 0) {
+                    return array('msg' => array(0 => 0, 1 => 'Nie wybrano pacjenta!'));
                 }
                 
                 $objectManager = $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');

@@ -87,7 +87,23 @@ class UserFilter extends InputFilter
 			),
 		));	 
         
-
+        $this->add(array(
+			'name'     => 'data_ur_mm',
+			'required' => false
+		));	 
+        $this->add(array(
+			'name'     => 'data_ur_dd',
+			'required' => false
+		));	
+        $this->add(array(
+			'name'     => 'data_ur_rr',
+			'required' => false
+		));	         
+        $this->add(array(
+			'name'     => 'plec',
+			'required' => false
+		));	 
+        
         $this->add(array(
             'name'       => 'email',
             'required'   => true,

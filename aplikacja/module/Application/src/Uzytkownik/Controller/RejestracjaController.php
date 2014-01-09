@@ -43,7 +43,18 @@ class RejestracjaController extends AbstractActionController
         } else if($this->identity()->poziom != 2 && $osoba->getId() != $this->identity()->id){
             return array('form' => $form, 'edycjaCzyDodawanie' => 0, 'msg' => array(0=>3, 1=>'Nie masz uprawnień do tej operacji.'));
         }
-                                    
+                              
+        // jeżeli konto jest aktywne i nie jest adminem, to niektóre pola są w trybie read-only
+        if($osoba->getAktywny() == 1 && $this->identity()->poziom != 2){
+            $form->get('imie')->setAttribute('readonly', 'true');
+            $form->get('nazwisko')->setAttribute('readonly', 'true');
+            $form->get('pesel')->setAttribute('readonly', 'true');
+            $form->get('plec')->setAttribute('disabled', 'disabled');
+            $form->get('data_ur_dd')->setAttribute('disabled', 'disabled');
+            $form->get('data_ur_mm')->setAttribute('disabled', 'disabled');
+            $form->get('data_ur_rr')->setAttribute('disabled', 'disabled');
+        } 
+                              
         $request = $this->getRequest();
         if (!$request->isPost()) {//jezeli POSTEM to tu jest true
 
@@ -59,18 +70,7 @@ class RejestracjaController extends AbstractActionController
             $form->get('data_ur_dd')->setValue($dataSplit[0]);
             $form->get('data_ur_mm')->setValue($dataSplit[1]);
             $form->get('data_ur_rr')->setValue($dataSplit[2]);
-            
-            
-            // jeżeli konto jest aktywne i nie jest adminem, to niektóre pola są w trybie read-only
-            if($osoba->getAktywny() == 1 && $this->identity()->poziom != 2){
-                $form->get('imie')->setAttribute('readonly', 'true');
-                $form->get('nazwisko')->setAttribute('readonly', 'true');
-                $form->get('pesel')->setAttribute('readonly', 'true');
-                $form->get('plec')->setAttribute('disabled', 'disabled');
-                $form->get('data_ur_dd')->setAttribute('disabled', 'disabled');
-                $form->get('data_ur_mm')->setAttribute('disabled', 'disabled');
-                $form->get('data_ur_rr')->setAttribute('disabled', 'disabled');
-            }           
+                      
         } else {
             //dla wpisywania nowej osoby po klinkieciu SUBMIT
             
@@ -103,15 +103,20 @@ class RejestracjaController extends AbstractActionController
                 }
 
                 
-                $osoba->setImie($data['imie']);
-                $osoba->setNazwisko($data['nazwisko']);
-                $osoba->setPesel($data['pesel']);
                 $osoba->setAdres($data['adres']);
                 $osoba->setEmail($data['email']);
                 $osoba->setTelefon($data['telefon']);
-                $osoba->setDataUr(new \DateTime($data['data_ur_rr'].'-'.$data['data_ur_mm'].'-'.$data['data_ur_dd']));
-                $osoba->setPlec($data['plec']);
-                                    
+                
+                // jeżeli konto jest aktywne i nie jest adminem, to niektóre pola są w trybie read-only
+                // zatem ich nie zmieniamy
+                if($osoba->getAktywny() != 1 || $this->identity()->poziom == 2){
+                    $osoba->setImie($data['imie']);
+                    $osoba->setNazwisko($data['nazwisko']);
+                    $osoba->setPesel($data['pesel']);
+                    
+                    $osoba->setDataUr(new \DateTime($data['data_ur_rr'].'-'.$data['data_ur_mm'].'-'.$data['data_ur_dd']));
+                    $osoba->setPlec($data['plec']);
+                }                   
                 
                 
                 try{
@@ -123,6 +128,8 @@ class RejestracjaController extends AbstractActionController
                     
                     $msg[1] = 'Baza została zaktualizowana poprawnie.';
                     $msg[0] = true;
+                    
+                    return array('edycjaCzyDodawanie' => $edycjaCzyDodawanie, 'msg' => $msg);
                 }
                 catch(\Exception $exc){
                     $msg[1] = 'Formularz został wypełniony niewłaściwie. [#2]';
